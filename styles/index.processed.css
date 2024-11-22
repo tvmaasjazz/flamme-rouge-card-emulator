@@ -1,0 +1,134 @@
+body {
+  background: #f5f5f5;
+  overflow-x: hidden;
+}
+
+.hide {
+  visibility: hidden;
+}
+
+.container {
+  margin: 0 auto 0 auto;
+  width: 360px;
+  text-align: center;
+}
+
+.containerCenter {
+  margin: 0 auto 0 auto;
+  text-align: center;
+}
+
+.deckInfo {
+  display: inline-block;
+  width: 170px;
+  text-align: center;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.drawButton {
+  background-color: #4caf50; /* Green */
+  border: none;
+  color: white;
+  padding: 15px 15px;
+  width: 135px;
+  height: 60px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 0px 24px 0 4px;
+}
+
+.drawButton:disabled {
+  border: 1px solid #999999;
+  background-color: #cccccc;
+  color: #666666;
+}
+
+.highlighted {
+  border: 2px solid #ffff22;
+  color: #ffff22;
+}
+
+.cardContainer {
+  height: 120px;
+  width: 332px;
+  border: 2px solid #999;
+  margin: 0 auto;
+}
+
+.cardButton {
+  background-color: #aaa; /* Light Gray */
+  border: 2px solid #222;
+  color: white;
+  padding: 30px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 24px;
+  margin: 14px 10px 0px 14px;
+}
+
+.highlightCard {
+  background-color: #aad;
+}
+
+.selectedCard {
+  display: inline-block;
+  width: 120px;
+  height: 140px;
+  margin: 0px 24px 0 4px;
+  border: 2px solid #222;
+  text-align: center;
+}
+
+.exhaustionButton {
+  background-color: #b30;
+  display: inline-block;
+  font-size: 12px;
+  padding: 8px 8px;
+  width: 200px;
+  text-align: center;
+  text-decoration: none;
+  margin: 4px 0 16px 4px;
+}
+
+.exhaustionAdded {
+  border: 1px solid #999999;
+  background-color: #cccccc;
+  color: #666666;
+}
+
+.nextTurnButton {
+  background-color: #25c;
+  width: 200px;
+  height: 80px;
+  font-size: 28px;
+  margin-top: 30px;
+}
+
+.resetButton {
+  color: red;
+  margin-top: 70px;
+}
+
+.boostButton {
+  background-color: #999;
+  border: 2px solid #222;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  font-size: 18px;
+  margin: 10px;
+}
+
+.boostButton:disabled {
+  background-color: #ccc;
+  border: 1px solid #666;
+  color: #666;
+}
+
+.selectedBoost {
+  border: 2px solid yellow;
+}

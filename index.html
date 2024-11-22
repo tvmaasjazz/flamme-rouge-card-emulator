@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!--  Meta  -->
+    <meta charset="UTF-8" />
+    <title>Flamme Rouge Card Emulator</title>
+
+    <!--  Styles  -->
+    <link rel="stylesheet" href="styles/index.processed.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h3>Flamme Rouge Deck Manager</h3>
+
+      <div class="pregameMenu" id="pregameMenu" style="font-size: 18px">
+        <h3 style="color: orange">Deck Setup</h3>
+        <form id="setupForm">
+          <label for="addSprinterExhaustion">Add Sprinter Exhaustion:</label>
+          <select id="addSprinterExhaustion" name="addSprinterExhaustion">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+          </select>
+          <br />
+          <label for="addRollerExhaustion">Add Rouleur Exhaustion:</label>
+          <select id="addRollerExhaustion" name="addRollerExhaustion">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+          </select>
+          <br />
+          <label for="removeFromSprinter">Remove From Sprinter (ie 3,4):</label>
+          <input
+            type="text"
+            id="removeFromSprinter"
+            name="removeFromSprinter"
+          />
+          <br />
+          <label for="removeFromRoller">Remove From Rouleur (ie 3,4):</label>
+          <input type="text" id="removeFromRoller" name="removeFromRoller" />
+          <br />
+
+          <input
+            type="submit"
+            value="Start Game"
+            class="drawButton"
+            style="margin-top: 14px"
+          />
+        </form>
+      </div>
+
+      <p></p>
+
+      <div class="mainGame" id="mainGame" style="display: none">
+        <!--        -->
+        <div id="drawCardPhase">
+          <h3 id="gameStatus" style="color: orange">
+            Choose Racer To Select Card
+          </h3>
+          <p></p>
+
+          <div class="deckInfoContainer">
+            <div id="sprinterDeckInfo" class="deckInfo"></div>
+            <div id="rollerDeckInfo" class="deckInfo"></div>
+          </div>
+
+          <button
+            id="drawSprinter"
+            class="drawButton"
+            style="margin-left: 22px"
+          >
+            Draw Sprinter
+          </button>
+          <button id="drawRoller" class="drawButton">Draw Rouleur</button>
+
+          <div
+            class="deckInfoContainer"
+            style="margin-top: 4px; margin-bottom: 2px"
+          >
+            <div id="sprinterExhaustInfo" class="deckInfo"></div>
+            <div id="rollerExhaustInfo" class="deckInfo"></div>
+          </div>
+
+          <button id="exhaustSprinter2" style="margin-right: 78px">
+            Add Exhaust
+          </button>
+          <button id="exhaustRoller2">Add Exhaust</button>
+
+          <p></p>
+
+          <div id="cardSelection" class="cardContainer"></div>
+        </div>
+
+        <!--        -->
+
+        <p></p>
+
+        <!-- chosen cards show here   -->
+        <div>
+          <div class="selectedCard" style="margin-left: 26px">
+            <div>Sprinter Card</div>
+            <div id="sprinterSelection"></div>
+          </div>
+          <div class="selectedCard">
+            <div>Rouleur Card</div>
+            <div id="rollerSelection"></div>
+          </div>
+        </div>
+
+        <div id="cheatScene" style="display: none">
+          <p></p>
+          <div id="sprinterBoost" style="margin: 20px">
+            <h4>Sprinter Roid Booster?</h4>
+            <div>
+              <button class="boostButton" id="sprinterNoBoost">No Boost</button>
+            </div>
+            <div style="display: flex; justify-content: center; gap: 10px">
+              <button class="boostButton" id="sprinterBoost1">+1</button>
+              <button class="boostButton" id="sprinterBoost2">+2</button>
+              <button class="boostButton" id="sprinterBoost3">+3</button>
+            </div>
+          </div>
+          <div id="rollerBoost" style="margin: 20px">
+            <h4>Rouleur Roid Booster?</h4>
+            <div>
+              <button class="boostButton" id="rollerNoBoost">No Boost</button>
+            </div>
+            <div style="display: flex; justify-content: center; gap: 10px">
+              <button class="boostButton" id="rollerBoost1">+1</button>
+              <button class="boostButton" id="rollerBoost2">+2</button>
+              <button class="boostButton" id="rollerBoost3">+3</button>
+            </div>
+          </div>
+
+          <button id="confirmBoost" style="margin-top: 30px" class="drawButton">
+            Confirm
+          </button>
+        </div>
+
+        <h3 id="gameStatus2" style="color: black; margin-top: 32px">
+          Move Racers, Add Exhaustion
+        </h3>
+        <div style="margin: 12px 0 0 80px">
+          <div>
+            <button id="exhaustSprinter" class="drawButton exhaustionButton">
+              Add Sprinter Exhaustion
+            </button>
+            <button id="exhaustRoller" class="drawButton exhaustionButton">
+              Add Rouleur Exhaustion
+            </button>
+          </div>
+
+          <p></p>
+          <button id="nextTurn" class="drawButton nextTurnButton">
+            Next Turn
+          </button>
+        </div>
+
+        <button id="reset" class="resetButton">Reset Race</button>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="scripts/index.js"></script>
+  </body>
+</html>
