@@ -65,7 +65,7 @@ function handleBoostSelection(card, rider) {
         }
       );
 
-      sprinterNoBoost.classList.add("highlightCard");
+      sprinterNoBoost.classList.add("highlighted");
     }
   } else if (rider === "roller") {
     const rollerBoostSection = document.getElementById("rollerBoost");
@@ -81,7 +81,7 @@ function handleBoostSelection(card, rider) {
           rollerSteroidPointsUsed + boostValue > steroidPointsPerRider;
       });
 
-      rollerNoBoost.classList.add("highlightCard");
+      rollerNoBoost.classList.add("highlighted");
     }
   }
 }
@@ -98,7 +98,7 @@ confirmBoost.addEventListener("click", () => {
 
   // Reset boost button highlights
   document.querySelectorAll(".boostButton").forEach((btn) => {
-    btn.classList.remove("highlightCard");
+    btn.classList.remove("highlighted");
   });
 
   // Proceed to the next phase
@@ -112,9 +112,9 @@ confirmBoost.addEventListener("click", () => {
 
       // Highlight the selected button
       [sprinterNoBoost, sprinterBoost1, sprinterBoost2, sprinterBoost3].forEach(
-        (btn) => btn.classList.remove("highlightCard")
+        (btn) => btn.classList.remove("highlighted")
       );
-      button.classList.add("highlightCard");
+      button.classList.add("highlighted");
 
       // Update the sprinter card display with a cardButton element
       const baseValue = selectedSprinterCard?.value || 0;
@@ -146,9 +146,9 @@ confirmBoost.addEventListener("click", () => {
 
       // Highlight the selected button
       [rollerNoBoost, rollerBoost1, rollerBoost2, rollerBoost3].forEach((btn) =>
-        btn.classList.remove("highlightCard")
+        btn.classList.remove("highlighted")
       );
-      button.classList.add("highlightCard");
+      button.classList.add("highlighted");
 
       // Update the roller card display with a cardButton element
       const baseValue = selectedRollerCard?.value || 0;
@@ -564,7 +564,7 @@ function checkForBoostScene() {
 function proceedToMoveRiders() {
   cheatScene.style.display = "none";
   document.querySelectorAll(".boostButton").forEach((btn) => {
-    btn.classList.remove("highlightCard");
+    btn.classList.remove("highlighted");
   });
 
   document.getElementById("sprinterBoost").style.display = "none";

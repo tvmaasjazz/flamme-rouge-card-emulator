@@ -107,11 +107,6 @@ body {
   color: #666666;
 }
 
-.highlighted {
-  color: #ffff22;
-  background-color: #87c289;
-}
-
 .chosenCards {
   display: flex;
   justify-content: center; /* Center both boxes horizontally */
@@ -313,4 +308,9 @@ h4 {
 
 .extraMargin {
   margin-top: 20px;
+}
+
+.highlighted {
+  color: #ffff22;
+  background-color: #87c289;
 }
