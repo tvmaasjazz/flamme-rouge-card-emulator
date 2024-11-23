@@ -1,47 +1,107 @@
 body {
   background: #f5f5f5;
-  overflow-x: hidden;
-}
-
-.hide {
-  visibility: hidden;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
 }
 
 .container {
-  margin: 0 auto 0 auto;
-  width: 360px;
+  max-width: 450px;
+  width: 90%; /* Use 90% of the screen width */
+  margin: 15px auto 0 auto; /* Center the container */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: top; /* Center items vertically */
+  min-height: 100vh; /* Full screen height */
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.pregameMenu,
+.mainGame {
+  width: 100%; /* Take the full width of the container */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center items horizontally */
   text-align: center;
 }
 
-.containerCenter {
-  margin: 0 auto 0 auto;
-  text-align: center;
+.deckInfoContainer,
+.buttonContainer {
+  display: flex;
+  justify-content: center; /* Center items horizontally */
+  flex-wrap: wrap; /* Wrap items for smaller screens */
+  gap: 10px; /* Space between buttons or info items */
+  width: 100%;
+}
+
+/* Overall container for the draw card phase */
+.drawCardContainer {
+  display: flex;
+  flex-direction: column; /* Vertically stack content: title, columns, selection */
+  align-items: center; /* Center everything horizontally */
+  width: 100%;
+  gap: 20px; /* Space between rows */
+}
+
+/* Parent container for sprinter and roller columns */
+.ridersContainer {
+  display: flex;
+  flex-direction: row; /* Arrange sprinter and roller containers side by side */
+  justify-content: center; /* Center the columns horizontally */
+  gap: 20px; /* Space between the two columns */
+  width: 100%;
+}
+
+/* Rider-specific draw container (sprinter and roller columns) */
+.riderDrawContainer {
+  display: flex;
+  flex-direction: column; /* Stack content vertically in each column */
+  align-items: center; /* Center content horizontally */
+  gap: 10px; /* Space between rows in each column */
+  width: 45%; /* Two columns sharing the space */
+  box-sizing: border-box;
 }
 
 .deckInfo {
-  display: inline-block;
-  width: 170px;
   text-align: center;
   font-size: 14px;
-  margin-bottom: 4px;
+  flex: 1 1 45%; /* Take up to 45% of the width, shrink if necessary */
+  max-width: 200px;
+}
+
+.cardContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 120px;
+  border: 2px solid #999;
+  width: 85%; /* Ensure it stretches across available space */
+  margin-top: 10px;
+  box-sizing: border-box;
 }
 
 .drawButton {
-  background-color: #4caf50; /* Green */
+  background-color: #4caf50;
   border: none;
   color: white;
-  padding: 15px 15px;
-  width: 135px;
-  height: 60px;
+  padding: 15px;
   text-align: center;
-  text-decoration: none;
-  display: inline-block;
   font-size: 16px;
-  margin: 0px 24px 0 4px;
+  flex: 1 1 45%; /* Flexible width with max 45% */
+  max-width: 200px;
+  margin: 0 5px;
+  height: 50px;
 }
 
 .drawButton:disabled {
-  border: 1px solid #999999;
   background-color: #cccccc;
   color: #666666;
 }
@@ -51,76 +111,56 @@ body {
   color: #ffff22;
 }
 
-.cardContainer {
-  height: 120px;
-  width: 332px;
-  border: 2px solid #999;
-  margin: 0 auto;
-}
-
-.cardButton {
-  background-color: #aaa; /* Light Gray */
-  border: 2px solid #222;
-  color: white;
-  padding: 30px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 24px;
-  margin: 14px 10px 0px 14px;
-}
-
-.highlightCard {
-  background-color: #aad;
+.chosenCards {
+  display: flex;
+  justify-content: center; /* Center both boxes horizontally */
+  align-items: center; /* Align vertically */
+  gap: 20px; /* Add space between the two boxes */
+  margin-top: 20px;
+  width: 100%; /* Ensure it stretches across available space */
 }
 
 .selectedCard {
-  display: inline-block;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center text and content horizontally */
+  justify-content: top; /* Center content vertically */
+  padding-top: 10px;
   width: 120px;
   height: 140px;
-  margin: 0px 24px 0 4px;
   border: 2px solid #222;
+  box-sizing: border-box;
+}
+
+.cardButton {
+  background-color: #aaa;
+  border: 2px solid #222;
+  color: white;
+  font-size: 18px;
+  margin: 10px;
+  padding: 15px;
+  flex: 0 1 auto;
   text-align: center;
-}
-
-.exhaustionButton {
-  background-color: #b30;
-  display: inline-block;
-  font-size: 12px;
-  padding: 8px 8px;
-  width: 200px;
-  text-align: center;
-  text-decoration: none;
-  margin: 4px 0 16px 4px;
-}
-
-.exhaustionAdded {
-  border: 1px solid #999999;
-  background-color: #cccccc;
-  color: #666666;
-}
-
-.nextTurnButton {
-  background-color: #25c;
-  width: 200px;
-  height: 80px;
-  font-size: 28px;
-  margin-top: 30px;
-}
-
-.resetButton {
-  color: red;
-  margin-top: 70px;
+  display: inline-flex; /* Ensure text is centered */
+  align-items: center;
+  justify-content: center;
+  min-height: 75px;
+  min-width: 50px;
 }
 
 .boostButton {
   background-color: #999;
   border: 2px solid #222;
   color: white;
-  padding: 10px 20px;
+  padding: 10px;
   text-align: center;
-  font-size: 18px;
+  font-size: 16px;
+  flex: 1 1 20%;
   margin: 10px;
+  max-width: 100px;
+  display: inline-flex; /* Ensure text is centered */
+  align-items: center;
+  justify-content: center;
 }
 
 .boostButton:disabled {
@@ -129,6 +169,146 @@ body {
   color: #666;
 }
 
-.selectedBoost {
-  border: 2px solid yellow;
+.cheatScene {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center all content horizontally */
+  justify-content: center; /* Center all content vertically */
+  gap: 20px;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.boostSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+#confirmBoost {
+  margin-top: 15px;
+}
+
+.boostOptions {
+  display: flex;
+  justify-content: center; /* Center buttons horizontally */
+  align-items: center; /* Center buttons vertically */
+  gap: 10px; /* Space between buttons */
+}
+
+.nextTurnButton {
+  background-color: #25c;
+  font-size: 20px;
+  padding: 15px 30px;
+  width: 80%;
+  margin-top: 30px;
+  display: inline-flex; /* Ensure content is centered */
+  align-items: center;
+  justify-content: center;
+}
+
+.resetButton {
+  color: red;
+  font-size: 16px;
+  padding: 10px 20px;
+  margin-top: 30px;
+  display: inline-flex; /* Ensure content is centered */
+  align-items: center;
+  justify-content: center;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center labels and inputs */
+  margin: 10px 0;
+  width: 100%;
+  gap: 5px;
+}
+
+.formGroupRow {
+  flex-direction: row;
+  gap: 20px;
+}
+
+button {
+  cursor: pointer;
+}
+
+h3,
+h4 {
+  text-align: center;
+  margin: 0 auto;
+}
+
+.title {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Container for draw card phase */
+#drawCardPhase {
+  display: flex;
+  flex-direction: column; /* Stack rows vertically */
+  align-items: center; /* Center align content horizontally */
+  width: 100%;
+  gap: 10px; /* Space between rows */
+}
+
+#cheatScene {
+  display: flex;
+  flex-direction: column; /* Stack rows vertically */
+  align-items: center; /* Center align content horizontally */
+  width: 100%;
+  gap: 10px; /* Space between rows */
+}
+
+/* Move Racers Phase Container */
+.moveRacersContainer {
+  display: flex;
+  flex-direction: column; /* Stack all elements vertically */
+  align-items: center; /* Center horizontally */
+  gap: 20px; /* Space between rows */
+  width: 100%; /* Full width of the parent container */
+  margin-top: 30px; /* Add some spacing above */
+}
+
+.exhaustButton {
+  color: white;
+  border: none;
+  padding: 6px 8px; /* Smaller padding */
+  font-size: 12px; /* Smaller font size */
+  cursor: pointer;
+  border-radius: 4px; /* Optional: for rounded edges */
+  box-sizing: border-box;
+  max-width: 100px;
+  opacity: 90%;
+}
+
+.exhaustButton {
+  background-color: rgb(209, 76, 76); /* Dark red color */
+}
+
+.exhaustionButton {
+  background-color: rgb(209, 76, 76); /* Dark red color */
+}
+
+.exhaustionAdded {
+  background-color: rgb(187, 187, 187); /* Dark red color */
+}
+
+.exhaustButton:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.highlightCard {
+  background-color: #abceeb;
+}
+
+.extraMargin {
+  margin-top: 20px;
 }
