@@ -93,9 +93,9 @@ body {
   background-color: #4caf50;
   border: none;
   color: white;
-  padding: 15px;
+  padding: 5px;
   text-align: center;
-  font-size: 16px;
+  font-size: 15px;
   flex: 1 1 45%; /* Flexible width with max 45% */
   max-width: 200px;
   margin: 0 5px;
@@ -294,6 +294,7 @@ h4 {
 
 .exhaustionButton {
   background-color: rgb(209, 76, 76); /* Dark red color */
+  font-size: 14px;
 }
 
 .exhaustionAdded {
