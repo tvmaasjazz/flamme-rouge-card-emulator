@@ -83,10 +83,10 @@ body {
   align-items: center;
   height: 120px;
   border: 2px solid #999;
-  width: 85%; /* Ensure it stretches across available space */
+  width: 95%; /* Ensure it stretches across available space */
   margin-top: 10px;
   box-sizing: border-box;
-  min-width: 400px;
+  max-width: 600px;
 }
 
 .drawButton {
