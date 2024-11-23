@@ -93,9 +93,9 @@ body {
   background-color: #4caf50;
   border: none;
   color: white;
-  padding: 5px;
+  padding: 15px;
   text-align: center;
-  font-size: 15px;
+  font-size: 16px;
   flex: 1 1 45%; /* Flexible width with max 45% */
   max-width: 200px;
   margin: 0 5px;
@@ -108,8 +108,8 @@ body {
 }
 
 .highlighted {
-  border: 2px solid #ffff22;
   color: #ffff22;
+  background-color: #87c289;
 }
 
 .chosenCards {
