@@ -563,6 +563,7 @@ function checkForBoostScene() {
 
 function proceedToMoveRiders() {
   cheatScene.style.display = "none";
+  confirmBoost.innerText = "Ride Clean";
   document.querySelectorAll(".boostButton").forEach((btn) => {
     btn.classList.remove("highlighted");
   });
