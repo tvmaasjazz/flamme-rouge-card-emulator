@@ -9,6 +9,7 @@ const mainGame = document.getElementById("mainGame");
 const pregameMenu = document.getElementById("pregameMenu");
 const setupForm = document.getElementById("setupForm");
 const drawCardPhase = document.getElementById("drawCardPhase");
+const moveRacersPhase = document.getElementById("moveRacersPhase");
 const sprinterDeckInfo = document.getElementById("sprinterDeckInfo");
 const rollerDeckInfo = document.getElementById("rollerDeckInfo");
 const sprinterExhaustInfo = document.getElementById("sprinterExhaustInfo");
@@ -63,6 +64,8 @@ function handleBoostSelection(card, rider) {
             sprinterSteroidPointsUsed + boostValue > steroidPointsPerRider;
         }
       );
+
+      sprinterNoBoost.classList.add("highlightCard");
     }
   } else if (rider === "roller") {
     const rollerBoostSection = document.getElementById("rollerBoost");
@@ -77,6 +80,8 @@ function handleBoostSelection(card, rider) {
         button.disabled =
           rollerSteroidPointsUsed + boostValue > steroidPointsPerRider;
       });
+
+      rollerNoBoost.classList.add("highlightCard");
     }
   }
 }
@@ -93,7 +98,7 @@ confirmBoost.addEventListener("click", () => {
 
   // Reset boost button highlights
   document.querySelectorAll(".boostButton").forEach((btn) => {
-    btn.classList.remove("selectedBoost");
+    btn.classList.remove("highlightCard");
   });
 
   // Proceed to the next phase
@@ -107,9 +112,9 @@ confirmBoost.addEventListener("click", () => {
 
       // Highlight the selected button
       [sprinterNoBoost, sprinterBoost1, sprinterBoost2, sprinterBoost3].forEach(
-        (btn) => btn.classList.remove("selectedBoost")
+        (btn) => btn.classList.remove("highlightCard")
       );
-      button.classList.add("selectedBoost");
+      button.classList.add("highlightCard");
 
       // Update the sprinter card display with a cardButton element
       const baseValue = selectedSprinterCard?.value || 0;
@@ -124,6 +129,12 @@ confirmBoost.addEventListener("click", () => {
       // Replace the content of sprinterSelection
       sprinterSelection.innerHTML = ""; // Clear previous content
       sprinterSelection.appendChild(cardButton);
+
+      if (rollerBoostValue + sprinterBoostValue > 0) {
+        confirmBoost.innerText = "Inject Roids";
+      } else {
+        confirmBoost.innerText = "Ride Clean";
+      }
     });
   }
 );
@@ -135,9 +146,9 @@ confirmBoost.addEventListener("click", () => {
 
       // Highlight the selected button
       [rollerNoBoost, rollerBoost1, rollerBoost2, rollerBoost3].forEach((btn) =>
-        btn.classList.remove("selectedBoost")
+        btn.classList.remove("highlightCard")
       );
-      button.classList.add("selectedBoost");
+      button.classList.add("highlightCard");
 
       // Update the roller card display with a cardButton element
       const baseValue = selectedRollerCard?.value || 0;
@@ -152,6 +163,12 @@ confirmBoost.addEventListener("click", () => {
       // Replace the content of rollerSelection
       rollerSelection.innerHTML = ""; // Clear previous content
       rollerSelection.appendChild(cardButton);
+
+      if (rollerBoostValue + sprinterBoostValue > 0) {
+        confirmBoost.innerText = "Inject Roids";
+      } else {
+        confirmBoost.innerText = "Ride Clean";
+      }
     });
   }
 );
@@ -258,26 +275,20 @@ class RacerDeck {
 
 function reset() {
   gameStatus.style.color = "orange";
-  gameStatus2.style.display = "none";
   sprinterSelection.innerHTML = "";
   rollerSelection.innerHTML = "";
-  drawCardPhase.style.display = "block";
-  exhaustSprinterButton.style.display = "none";
-  exhaustRollerButton.style.display = "none";
-  nextTurnButton.style.display = "none";
-  resetButton.style.display = "none";
-  sprinterSelection.appendChild(getFakeCard());
-  rollerSelection.appendChild(getFakeCard());
+  drawCardPhase.style.display = "flex"; // Update to 'flex'
+  moveRacersPhase.style.display = "none";
 
-  // enable all buttons
+  // Enable all buttons
   drawSprinterButton.disabled = false;
   drawRollerButton.disabled = false;
   exhaustSprinterButton.disabled = false;
   exhaustRollerButton.disabled = false;
 
-  // show menu and hide main game
+  // Show menu and hide main game
   mainGame.style.display = "none";
-  pregameMenu.style.display = "block";
+  pregameMenu.style.display = "flex"; // Update to 'flex'
 
   sprinterDeck = new RacerDeck(getSprinterDeck(), "Sprinter");
   sprinterDeck.shuffle(sprinterDeck.drawPile);
@@ -311,14 +322,23 @@ function getRollerDeck() {
 // on click for new race
 reset();
 
-// setup listenerers
-drawSprinterButton.addEventListener("click", () => {
+// Shared function for card drawing and selection
+function handleCardDraw(
+  deck,
+  deckInfo,
+  exhaustInfo,
+  selectionBox,
+  selectedCardRef,
+  drawButton,
+  riderType
+) {
   if (cardSelectionDiv.childElementCount === 0) {
-    drawSprinterButton.classList.add("highlighted");
+    drawButton.classList.add("highlighted");
 
-    const drawnCards = sprinterDeck.draw();
-    sprinterDeck.setDeckInfo(sprinterDeckInfo, sprinterExhaustInfo);
+    const drawnCards = deck.draw();
+    deck.setDeckInfo(deckInfo, exhaustInfo);
     const drawnCardButtons = [];
+
     for (const drawnCard of drawnCards) {
       const cardButton = document.createElement("BUTTON");
       cardButton.classList.add("cardButton");
@@ -331,26 +351,47 @@ drawSprinterButton.addEventListener("click", () => {
 
       cardButton.addEventListener("click", () => {
         if (!cardButton.classList.contains("highlightCard")) {
-          for (const button of drawnCardButtons) {
-            button.classList.remove("highlightCard");
-          }
+          // Remove highlight from all other buttons
+          drawnCardButtons.forEach((button) =>
+            button.classList.remove("highlightCard")
+          );
+
+          console.log("ADDING CLASS TO CARD BUTTON");
+
+          // Highlight the clicked button
           cardButton.classList.add("highlightCard");
-          return;
+        } else {
+          // Deselect the button and finalize the selection
+          cardButton.classList.remove("highlightCard");
+          cardButton.disabled = true;
+
+          // Update selection box
+          selectionBox.innerHTML = "";
+          selectionBox.appendChild(cardButton);
+
+          // Update the selected card reference
+          if (riderType === "sprinter") {
+            selectedSprinterCard = drawnCard;
+          } else if (riderType === "roller") {
+            selectedRollerCard = drawnCard;
+          }
+
+          // Recycle the unselected cards
+          deck.select(drawnCard, drawnCards);
+          deck.setDeckInfo(deckInfo, exhaustInfo);
+
+          // Clear the selection area
+          cardSelectionDiv.innerHTML = "";
+
+          // Disable the draw button
+          drawButton.classList.remove("highlighted");
+          drawButton.disabled = true;
+
+          // Check if both cards are selected and advance
+          if (selectedSprinterCard && selectedRollerCard) {
+            checkForBoostScene();
+          }
         }
-
-        cardButton.classList.remove("highlightCard");
-        cardButton.disabled = true;
-        sprinterSelection.innerHTML = "";
-        sprinterSelection.appendChild(cardButton);
-        sprinterDeck.select(drawnCard, drawnCards);
-        sprinterDeck.setDeckInfo(sprinterDeckInfo, sprinterExhaustInfo);
-        selectedSprinterCard = drawnCard;
-
-        cardSelectionDiv.innerHTML = ""; // Clear selection area
-        drawSprinterButton.classList.remove("highlighted");
-        drawSprinterButton.disabled = true;
-
-        checkForBoostScene();
       });
 
       cardSelectionDiv.appendChild(cardButton);
@@ -358,77 +399,48 @@ drawSprinterButton.addEventListener("click", () => {
   } else {
     alert("Illegal draw attempt!");
   }
+}
+
+// Setup listeners
+drawSprinterButton.addEventListener("click", () => {
+  handleCardDraw(
+    sprinterDeck,
+    sprinterDeckInfo,
+    sprinterExhaustInfo,
+    sprinterSelection,
+    { value: selectedSprinterCard },
+    drawSprinterButton,
+    "sprinter"
+  );
 });
 
 drawRollerButton.addEventListener("click", () => {
-  if (cardSelectionDiv.childElementCount === 0) {
-    drawRollerButton.classList.add("highlighted");
-
-    const drawnCards = rollerDeck.draw();
-    rollerDeck.setDeckInfo(rollerDeckInfo, rollerExhaustInfo);
-    const drawnCardButtons = [];
-    for (const drawnCard of drawnCards) {
-      const cardButton = document.createElement("BUTTON");
-      cardButton.classList.add("cardButton");
-      drawnCardButtons.push(cardButton);
-
-      cardButton.innerText = drawnCard.value;
-      if (drawnCard.type === "EXHAUSTION") {
-        cardButton.style.color = "#aa0000";
-      }
-
-      cardButton.addEventListener("click", () => {
-        if (!cardButton.classList.contains("highlightCard")) {
-          for (const button of drawnCardButtons) {
-            button.classList.remove("highlightCard");
-          }
-          cardButton.classList.add("highlightCard");
-          return;
-        }
-
-        cardButton.classList.remove("highlightCard");
-        cardButton.disabled = true;
-        rollerSelection.innerHTML = "";
-        rollerSelection.appendChild(cardButton);
-        rollerDeck.select(drawnCard, drawnCards);
-        rollerDeck.setDeckInfo(rollerDeckInfo, rollerExhaustInfo);
-        selectedRollerCard = drawnCard;
-
-        cardSelectionDiv.innerHTML = ""; // Clear selection area
-        drawRollerButton.classList.remove("highlighted");
-        drawRollerButton.disabled = true;
-
-        checkForBoostScene();
-      });
-
-      cardSelectionDiv.appendChild(cardButton);
-    }
-  } else {
-    alert("Illegal draw attempt!");
-  }
+  handleCardDraw(
+    rollerDeck,
+    rollerDeckInfo,
+    rollerExhaustInfo,
+    rollerSelection,
+    { value: selectedRollerCard },
+    drawRollerButton,
+    "roller"
+  );
 });
 
 nextTurnButton.addEventListener("click", () => {
   if (sprinterSelection.innerHTML !== "" && rollerSelection.innerHTML !== "") {
     sprinterSelection.innerHTML = "";
     rollerSelection.innerHTML = "";
-    sprinterSelection.appendChild(getFakeCard());
-    rollerSelection.appendChild(getFakeCard());
-    drawCardPhase.style.display = "block";
-    exhaustSprinterButton.style.display = "none";
-    exhaustRollerButton.style.display = "none";
+    drawCardPhase.style.display = "flex"; // Update to 'flex'
     exhaustSprinterButton.classList.remove("exhaustionAdded");
     exhaustRollerButton.classList.remove("exhaustionAdded");
     exhaustSprinter2.classList.remove("exhaustionAdded");
     exhaustRoller2.classList.remove("exhaustionAdded");
     drawSprinterButton.disabled = false;
     drawRollerButton.disabled = false;
-    nextTurnButton.style.display = "none";
     gameStatus.style.color = "orange";
-    gameStatus2.style.display = "none";
-    resetButton.style.display = "none";
+    moveRacersPhase.style.display = "none";
   } else {
-    alert("select card for both riders");
+    alert("Select a card for both riders!");
   }
 });
 
@@ -522,14 +534,12 @@ exhaustSprinter2.addEventListener("click", () => {
 });
 
 function checkForBoostScene() {
-  // Check if both cards have been selected
   if (
     selectedSprinterCard &&
     selectedRollerCard &&
     !sprinterSelection.firstChild.classList.contains("hide") &&
     !rollerSelection.firstChild.classList.contains("hide")
   ) {
-    // Check if either rider qualifies for the boost page
     const sprinterIsExhaustion =
       selectedSprinterCard.value === 2 &&
       selectedSprinterCard.type === "EXHAUSTION" &&
@@ -540,40 +550,31 @@ function checkForBoostScene() {
       selectedRollerCard.type === "EXHAUSTION" &&
       rollerSteroidPointsUsed < steroidPointsPerRider;
 
-    // Show the boost page only if at least one rider qualifies
     if (sprinterIsExhaustion || rollerIsExhaustion) {
       handleBoostSelection(selectedSprinterCard, "sprinter");
       handleBoostSelection(selectedRollerCard, "roller");
-      cheatScene.style.display = "block";
+      cheatScene.style.display = "flex"; // Update to 'flex'
       drawCardPhase.style.display = "none";
     } else {
-      // Proceed to the next scene if no riders qualify for the boost page
       proceedToMoveRiders();
     }
   }
 }
 
 function proceedToMoveRiders() {
-  // Reset the cheat scene and boost buttons
   cheatScene.style.display = "none";
   document.querySelectorAll(".boostButton").forEach((btn) => {
-    btn.classList.remove("selectedBoost");
+    btn.classList.remove("highlightCard");
   });
 
-  // Reset the boost sections
   document.getElementById("sprinterBoost").style.display = "none";
   document.getElementById("rollerBoost").style.display = "none";
 
-  // Show the move riders phase
   drawCardPhase.style.display = "none";
-  exhaustSprinterButton.style.display = "block";
-  exhaustRollerButton.style.display = "block";
-  nextTurnButton.style.display = "block";
-  resetButton.style.display = "inline-block";
+  moveRacersPhase.style.display = "flex";
+  gameStatus2Text.style.display = "flex";
   gameStatus.style.color = "gray";
-  gameStatus2.style.display = "inline-block";
 
-  // Reset selected cards for the next turn
   selectedSprinterCard = null;
   selectedRollerCard = null;
 }
