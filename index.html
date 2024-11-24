@@ -189,8 +189,67 @@
             Next Turn
           </button>
 
-          <!-- Line 4: Reset Race Button -->
+          <p>----------------------------------------</p>
+          <p>Additional Actions</p>
+
+          <!-- Line 4: End Race Button -->
+          <button id="endRace" class="drawButton raceOverButton">
+            Race Over
+          </button>
+
+          <!-- Line 5: Reset Race Button -->
           <button id="reset" class="resetButton">Reset Race</button>
+        </div>
+
+        <!-- Drug Testing Scene -->
+        <div
+          id="drugTestingScene"
+          class="drugTestingContainer"
+          style="display: none"
+        >
+          <h3 style="color: orange">Post-Race Random Drug Testing</h3>
+          <div id="sprinterTesting" class="riderTestingContainer">
+            <button
+              id="checkSprinterTest"
+              class="drawButton drugTestCheckButton"
+            >
+              Check if Sprinter Needs to Test
+            </button>
+            <div id="sprinterTestResult" class="testResultMessage"></div>
+            <button
+              id="runSprinterTest"
+              class="drawButton drugTestButton"
+              style="display: none"
+            >
+              Run Test
+            </button>
+          </div>
+          <div id="rollerTesting" class="riderTestingContainer">
+            <button id="checkRollerTest" class="drawButton drugTestCheckButton">
+              Check if Rouleur Needs to Test
+            </button>
+            <div id="rollerTestResult" class="testResultMessage"></div>
+            <button
+              id="runRollerTest"
+              class="drawButton drugTestButton"
+              style="display: none"
+            >
+              Run Test
+            </button>
+          </div>
+
+          <div>
+            <p>----------------------------------------</p>
+            <p>Additional Actions</p>
+
+            <!-- Line 4: End Race Button -->
+            <button id="nextTurn" class="drawButton nextTurnButton">
+              Back to Race
+            </button>
+
+            <!-- Line 5: Reset Race Button -->
+            <button id="reset" class="resetButton">Reset Race</button>
+          </div>
         </div>
       </div>
     </div>
