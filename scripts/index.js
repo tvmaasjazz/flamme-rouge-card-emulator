@@ -18,8 +18,9 @@ const drawSprinterButton = document.getElementById("drawSprinter");
 const drawRollerButton = document.getElementById("drawRoller");
 const exhaustSprinterButton = document.getElementById("exhaustSprinter");
 const exhaustRollerButton = document.getElementById("exhaustRoller");
-const nextTurnButton = document.getElementById("nextTurn");
-const resetButton = document.getElementById("reset");
+const nextTurnButtons = document.querySelectorAll(".nextTurnButton");
+
+const resetButtons = document.querySelectorAll(".resetButton");
 const exhaustSprinter2 = document.getElementById("exhaustSprinter2");
 const exhaustRoller2 = document.getElementById("exhaustRoller2");
 
@@ -186,16 +187,6 @@ const rollerTestResultMessage = document.getElementById("rollerTestResult");
 const runRollerTestButton = document.getElementById("runRollerTest");
 const endRaceButton = document.getElementById("endRace");
 
-// End race button click listener
-endRaceButton.addEventListener("click", () => {
-  moveRacersPhase.style.display = "none";
-  drugTestingScene.style.display = "flex";
-
-  // Hide selected card containers
-  sprinterSelection.parentElement.style.display = "none";
-  rollerSelection.parentElement.style.display = "none";
-});
-
 // Drug Testing logic
 function calculateTestRequired(boostPoints) {
   const odds = [0.5, 0.5, 0.5, 0.7, 0.9, 1.0];
@@ -260,6 +251,21 @@ runRollerTestButton.addEventListener("click", () => {
 });
 
 /** END STEROID TESTING STUFF */
+
+// Race Over Button with Confirmation
+endRaceButton.addEventListener("click", () => {
+  const confirmEndRace = confirm(
+    "Are you sure you want to end the race and proceed to drug testing?"
+  );
+  if (confirmEndRace) {
+    moveRacersPhase.style.display = "none";
+    drugTestingScene.style.display = "flex";
+
+    // Hide selected card containers
+    sprinterSelection.parentElement.style.display = "none";
+    rollerSelection.parentElement.style.display = "none";
+  }
+});
 
 class Card {
   constructor(value, type) {
@@ -365,12 +371,28 @@ function reset() {
   rollerSelection.innerHTML = "";
   drawCardPhase.style.display = "flex"; // Update to 'flex'
   moveRacersPhase.style.display = "none";
+  drugTestingScene.style.display = "none";
+
+  sprinterSelection.parentElement.style.display = "flex";
+  rollerSelection.parentElement.style.display = "flex";
 
   // Enable all buttons
   drawSprinterButton.disabled = false;
   drawRollerButton.disabled = false;
   exhaustSprinterButton.disabled = false;
   exhaustRollerButton.disabled = false;
+  exhaustSprinter2.disabled = false;
+  exhaustRoller2.disabled = false;
+
+  // resets drug scene
+  rollerTestResultMessage.textContent = "";
+  sprinterTestResultMessage.textContent = "";
+  runSprinterTestButton.style.display = "none";
+  runRollerTestButton.style.display = "none";
+  checkSprinterTestButton.disabled = false;
+  runSprinterTestButton.disabled = false;
+  checkRollerTestButton.disabled = false;
+  runRollerTestButton.disabled = false;
 
   // Show menu and hide main game
   mainGame.style.display = "none";
@@ -510,22 +532,41 @@ drawRollerButton.addEventListener("click", () => {
   );
 });
 
-nextTurnButton.addEventListener("click", () => {
-  if (sprinterSelection.innerHTML !== "" && rollerSelection.innerHTML !== "") {
-    sprinterSelection.innerHTML = "";
-    rollerSelection.innerHTML = "";
-    drawCardPhase.style.display = "flex"; // Update to 'flex'
-    exhaustSprinterButton.classList.remove("exhaustionAdded");
-    exhaustRollerButton.classList.remove("exhaustionAdded");
-    exhaustSprinter2.classList.remove("exhaustionAdded");
-    exhaustRoller2.classList.remove("exhaustionAdded");
-    drawSprinterButton.disabled = false;
-    drawRollerButton.disabled = false;
-    gameStatus.style.color = "orange";
-    moveRacersPhase.style.display = "none";
-  } else {
-    alert("Select a card for both riders!");
-  }
+nextTurnButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    if (
+      sprinterSelection.innerHTML !== "" &&
+      rollerSelection.innerHTML !== ""
+    ) {
+      sprinterSelection.innerHTML = "";
+      rollerSelection.innerHTML = "";
+      sprinterSelection.parentElement.style.display = "flex";
+      rollerSelection.parentElement.style.display = "flex";
+      drawCardPhase.style.display = "flex"; // Update to 'flex'
+      exhaustSprinterButton.classList.remove("exhaustionAdded");
+      exhaustRollerButton.classList.remove("exhaustionAdded");
+      exhaustSprinter2.classList.remove("exhaustionAdded");
+      exhaustRoller2.classList.remove("exhaustionAdded");
+      drawSprinterButton.disabled = false;
+      drawRollerButton.disabled = false;
+
+      // resets drug scene
+      rollerTestResultMessage.textContent = "";
+      sprinterTestResultMessage.textContent = "";
+      runSprinterTestButton.style.display = "none";
+      runRollerTestButton.style.display = "none";
+      checkSprinterTestButton.disabled = false;
+      runSprinterTestButton.disabled = false;
+      checkRollerTestButton.disabled = false;
+      runRollerTestButton.disabled = false;
+
+      gameStatus.style.color = "orange";
+      moveRacersPhase.style.display = "none";
+      drugTestingScene.style.display = "none";
+    } else {
+      alert("Select a card for both riders!");
+    }
+  });
 });
 
 exhaustSprinterButton.addEventListener("click", () => {
@@ -557,8 +598,16 @@ exhaustRollerButton.addEventListener("click", () => {
   exhaustRollerButton.classList.add("exhaustionAdded");
 });
 
-resetButton.addEventListener("click", () => {
-  reset();
+// Reset Race Button with Confirmation
+resetButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const confirmReset = confirm(
+      "Are you sure you want to reset the race? This will erase all progress."
+    );
+    if (confirmReset) {
+      reset(); // Use existing reset function
+    }
+  });
 });
 
 setupForm.addEventListener("submit", (event) => {
