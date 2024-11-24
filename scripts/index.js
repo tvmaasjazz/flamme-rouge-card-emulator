@@ -175,6 +175,92 @@ confirmBoost.addEventListener("click", () => {
 
 /** END STEROID STUFF */
 
+/** STEROID TESTING STUFF */
+// HTML elements for drug testing
+const drugTestingScene = document.getElementById("drugTestingScene");
+const checkSprinterTestButton = document.getElementById("checkSprinterTest");
+const sprinterTestResultMessage = document.getElementById("sprinterTestResult");
+const runSprinterTestButton = document.getElementById("runSprinterTest");
+const checkRollerTestButton = document.getElementById("checkRollerTest");
+const rollerTestResultMessage = document.getElementById("rollerTestResult");
+const runRollerTestButton = document.getElementById("runRollerTest");
+const endRaceButton = document.getElementById("endRace");
+
+// End race button click listener
+endRaceButton.addEventListener("click", () => {
+  moveRacersPhase.style.display = "none";
+  drugTestingScene.style.display = "flex";
+
+  // Hide selected card containers
+  sprinterSelection.parentElement.style.display = "none";
+  rollerSelection.parentElement.style.display = "none";
+});
+
+// Drug Testing logic
+function calculateTestRequired(boostPoints) {
+  const odds = [0.5, 0.5, 0.5, 0.7, 0.9, 1.0];
+  return Math.random() < odds[boostPoints];
+}
+
+function calculateTestResult(boostPoints) {
+  const odds = [0.0, 0.2, 0.5, 0.8, 0.9, 0.9];
+  return Math.random() < odds[boostPoints];
+}
+
+// Sprinter Testing
+checkSprinterTestButton.addEventListener("click", () => {
+  checkSprinterTestButton.disabled = true; // Disable button after press
+  const testRequired = calculateTestRequired(sprinterSteroidPointsUsed);
+
+  if (testRequired) {
+    sprinterTestResultMessage.textContent = "Test required.";
+    runSprinterTestButton.style.display = "block"; // Show "Run Test" button
+  } else {
+    sprinterTestResultMessage.textContent = "No test required.";
+  }
+});
+
+runSprinterTestButton.addEventListener("click", () => {
+  runSprinterTestButton.disabled = true; // Disable button after press
+  const testResult = calculateTestResult(sprinterSteroidPointsUsed);
+
+  if (testResult) {
+    sprinterTestResultMessage.textContent =
+      "POSITIVE for Steroids - racer is eliminated.";
+  } else {
+    sprinterTestResultMessage.textContent =
+      "NEGATIVE for Steroids - Thanks for protecting the integrity of the sport!";
+  }
+});
+
+// Rouleur Testing
+checkRollerTestButton.addEventListener("click", () => {
+  checkRollerTestButton.disabled = true; // Disable button after press
+  const testRequired = calculateTestRequired(rollerSteroidPointsUsed);
+
+  if (testRequired) {
+    rollerTestResultMessage.textContent = "Test required.";
+    runRollerTestButton.style.display = "block"; // Show "Run Test" button
+  } else {
+    rollerTestResultMessage.textContent = "No test required.";
+  }
+});
+
+runRollerTestButton.addEventListener("click", () => {
+  runRollerTestButton.disabled = true; // Disable button after press
+  const testResult = calculateTestResult(rollerSteroidPointsUsed);
+
+  if (testResult) {
+    rollerTestResultMessage.textContent =
+      "POSITIVE for Steroids - racer is eliminated.";
+  } else {
+    rollerTestResultMessage.textContent =
+      "NEGATIVE for Steroids - Thanks for protecting the integrity of the sport!";
+  }
+});
+
+/** END STEROID TESTING STUFF */
+
 class Card {
   constructor(value, type) {
     this.value = value;
@@ -355,8 +441,6 @@ function handleCardDraw(
           drawnCardButtons.forEach((button) =>
             button.classList.remove("highlightCard")
           );
-
-          console.log("ADDING CLASS TO CARD BUTTON");
 
           // Highlight the clicked button
           cardButton.classList.add("highlightCard");

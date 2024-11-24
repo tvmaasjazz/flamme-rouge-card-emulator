@@ -302,6 +302,60 @@ h4 {
   cursor: not-allowed;
 }
 
+.raceOverButton {
+  background-color: orange;
+  font-size: 20px;
+  padding: 15px 30px;
+  width: 80%;
+  margin-top: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.drugTestingContainer {
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  align-items: center; /* Center align items horizontally */
+  width: 100%; /* Full width */
+  gap: 20px; /* Add spacing between elements */
+  box-sizing: border-box; /* Ensure padding doesn't break layout */
+}
+
+.riderTestingContainer {
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  align-items: center; /* Center align items horizontally */
+  width: 100%; /* Full width */
+  gap: 15px; /* Add spacing between elements */
+  margin-top: 20px; /* Add some margin from the top */
+  box-sizing: border-box; /* Ensure padding doesn't break layout */
+}
+
+.drugTestCheckButton,
+.drugTestButton {
+  width: 100%; /* Take most of the container width */
+  max-width: 400px; /* Cap the button width */
+  background-color: #4caf50; /* Green for the check button */
+  color: white;
+  padding: 15px; /* Space inside the button */
+  border: none;
+  text-align: center;
+  font-size: 16px;
+  cursor: pointer;
+  margin: 10px 0; /* Space above and below each button */
+}
+
+.drugTestButton {
+  background-color: rgb(209, 76, 76); /* Dark red color */
+}
+
+.testResultMessage {
+  text-align: center; /* Center-align the text */
+  font-size: 16px;
+  color: #444; /* Neutral text color */
+}
+
 .highlightCard {
   background-color: #abceeb;
 }
