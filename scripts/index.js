@@ -198,6 +198,32 @@ function calculateTestResult(boostPoints) {
   return Math.random() < odds[boostPoints];
 }
 
+// testing messages
+const positiveMessages = [
+  "Thanks for protecting the integrity of the sport!",
+  "Your hard work and honesty are commendable!",
+  "A true champion stays clean!",
+  "Integrity is the foundation of your success!",
+  "Clean racing is the best racing!",
+  "Honesty wins more than races—it wins respect!",
+  "Proof that skill beats shortcuts!",
+  "Clean effort, clean results. Well done!",
+  "Fair play isn’t just a rule; it’s a lifestyle!",
+  "No roids, no regrets. Keep shining!",
+];
+
+const negativeMessages = [
+  "This is a dark day for fair competition.",
+  "Steroids have no place in this sport.",
+  "Cheating never prospers—goodbye racer!",
+  "The sport deserves better role models.",
+  "Enjoy your podium... in the Hall of Shame.",
+  "A performance enhanced by deceit isn’t a performance at all.",
+  "Congratulations on the fastest trip to disqualification!",
+  "Your legacy is now a cautionary tale.",
+  "The only thing you’re leading in is bad decisions.",
+];
+
 // Sprinter Testing
 checkSprinterTestButton.addEventListener("click", () => {
   checkSprinterTestButton.disabled = true; // Disable button after press
@@ -216,11 +242,13 @@ runSprinterTestButton.addEventListener("click", () => {
   const testResult = calculateTestResult(sprinterSteroidPointsUsed);
 
   if (testResult) {
-    sprinterTestResultMessage.textContent =
-      "POSITIVE for Steroids - racer is eliminated.";
+    const randomNegativeMessage =
+      negativeMessages[Math.floor(Math.random() * negativeMessages.length)];
+    sprinterTestResultMessage.textContent = `POSITIVE for Steroids - ${randomNegativeMessage}`;
   } else {
-    sprinterTestResultMessage.textContent =
-      "NEGATIVE for Steroids - Thanks for protecting the integrity of the sport!";
+    const randomPositiveMessage =
+      positiveMessages[Math.floor(Math.random() * positiveMessages.length)];
+    sprinterTestResultMessage.textContent = `NEGATIVE for Steroids - ${randomPositiveMessage}`;
   }
 });
 
@@ -242,11 +270,13 @@ runRollerTestButton.addEventListener("click", () => {
   const testResult = calculateTestResult(rollerSteroidPointsUsed);
 
   if (testResult) {
-    rollerTestResultMessage.textContent =
-      "POSITIVE for Steroids - racer is eliminated.";
+    const randomNegativeMessage =
+      negativeMessages[Math.floor(Math.random() * negativeMessages.length)];
+    rollerTestResultMessage.textContent = `POSITIVE for Steroids - ${randomNegativeMessage}`;
   } else {
-    rollerTestResultMessage.textContent =
-      "NEGATIVE for Steroids - Thanks for protecting the integrity of the sport!";
+    const randomPositiveMessage =
+      positiveMessages[Math.floor(Math.random() * positiveMessages.length)];
+    rollerTestResultMessage.textContent = `NEGATIVE for Steroids - ${randomPositiveMessage}`;
   }
 });
 
