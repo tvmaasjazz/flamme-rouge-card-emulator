@@ -423,6 +423,8 @@ function reset() {
   runSprinterTestButton.disabled = false;
   checkRollerTestButton.disabled = false;
   runRollerTestButton.disabled = false;
+  sprinterSteroidPointsUsed = 0;
+  rollerSteroidPointsUsed = 0;
 
   // Show menu and hide main game
   mainGame.style.display = "none";
