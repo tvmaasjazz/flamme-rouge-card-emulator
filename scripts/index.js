@@ -6,6 +6,48 @@ let selectedRollerCard = null;
 
 let gameMode = "standard"; // Track current game mode: "standard" or "steroid"
 
+// LocalStorage functions
+const GAME_STATE_KEY = "flammeRougeGameState";
+
+function saveGameState() {
+  const gameState = {
+    gameMode,
+    sprinterDeck: {
+      drawPile: sprinterDeck.drawPile,
+      recyclePile: sprinterDeck.recyclePile,
+      discardPile: sprinterDeck.discardPile,
+      type: sprinterDeck.type
+    },
+    rollerDeck: {
+      drawPile: rollerDeck.drawPile,
+      recyclePile: rollerDeck.recyclePile,
+      discardPile: rollerDeck.discardPile,
+      type: rollerDeck.type
+    },
+    sprinterSteroidPointsUsed,
+    rollerSteroidPointsUsed,
+    gameActive: true
+  };
+  localStorage.setItem(GAME_STATE_KEY, JSON.stringify(gameState));
+}
+
+function loadGameState() {
+  const savedState = localStorage.getItem(GAME_STATE_KEY);
+  if (savedState) {
+    return JSON.parse(savedState);
+  }
+  return null;
+}
+
+function clearGameState() {
+  localStorage.removeItem(GAME_STATE_KEY);
+}
+
+function hasSavedGame() {
+  const savedState = loadGameState();
+  return savedState && savedState.gameActive;
+}
+
 // html elements
 const mainGame = document.getElementById("mainGame");
 const pregameMenu = document.getElementById("pregameMenu");
@@ -103,6 +145,9 @@ confirmBoost.addEventListener("click", () => {
   document.querySelectorAll(".boostButton").forEach((btn) => {
     btn.classList.remove("highlighted");
   });
+
+  // Save state after boost selection
+  saveGameState();
 
   // Proceed to the next phase
   proceedToMoveRiders();
@@ -398,6 +443,9 @@ class RacerDeck {
 }
 
 function reset() {
+  // Clear localStorage
+  clearGameState();
+  
   gameStatus.style.color = "orange";
   sprinterSelection.innerHTML = "";
   rollerSelection.innerHTML = "";
@@ -439,6 +487,9 @@ function reset() {
 
   sprinterDeck.setDeckInfo(sprinterDeckInfo, sprinterExhaustInfo);
   rollerDeck.setDeckInfo(rollerDeckInfo, rollerExhaustInfo);
+  
+  // Update menu to show/hide continue button
+  updateMenuButtons();
 }
 
 function getFakeCard() {
@@ -461,8 +512,67 @@ function getRollerDeck() {
   );
 }
 
-// on click for new race
-reset();
+// Initialize menu buttons based on saved game
+function updateMenuButtons() {
+  const continueButton = document.getElementById("continueGameButton");
+  if (hasSavedGame()) {
+    continueButton.style.display = "block";
+  } else {
+    continueButton.style.display = "none";
+  }
+}
+
+// Continue game from saved state
+function continueGame() {
+  const savedState = loadGameState();
+  if (!savedState) return;
+  
+  // Restore game mode
+  gameMode = savedState.gameMode;
+  
+  // Restore decks
+  sprinterDeck = new RacerDeck([], "Sprinter");
+  sprinterDeck.drawPile = savedState.sprinterDeck.drawPile.map(c => new Card(c.value, c.type));
+  sprinterDeck.recyclePile = savedState.sprinterDeck.recyclePile.map(c => new Card(c.value, c.type));
+  sprinterDeck.discardPile = savedState.sprinterDeck.discardPile.map(c => new Card(c.value, c.type));
+  
+  rollerDeck = new RacerDeck([], "Roller");
+  rollerDeck.drawPile = savedState.rollerDeck.drawPile.map(c => new Card(c.value, c.type));
+  rollerDeck.recyclePile = savedState.rollerDeck.recyclePile.map(c => new Card(c.value, c.type));
+  rollerDeck.discardPile = savedState.rollerDeck.discardPile.map(c => new Card(c.value, c.type));
+  
+  // Restore steroid points
+  sprinterSteroidPointsUsed = savedState.sprinterSteroidPointsUsed;
+  rollerSteroidPointsUsed = savedState.rollerSteroidPointsUsed;
+  
+  // Show/hide Race Over button based on game mode
+  if (gameMode === "steroid") {
+    endRaceButton.style.display = "block";
+  } else {
+    endRaceButton.style.display = "none";
+  }
+  
+  // Update UI
+  sprinterDeck.setDeckInfo(sprinterDeckInfo, sprinterExhaustInfo);
+  rollerDeck.setDeckInfo(rollerDeckInfo, rollerExhaustInfo);
+  
+  // Show game, hide menu
+  mainGame.style.display = "block";
+  pregameMenu.style.display = "none";
+}
+
+// Initialize on page load
+if (!hasSavedGame()) {
+  // Only initialize fresh decks if no saved game exists
+  sprinterDeck = new RacerDeck(getSprinterDeck(), "Sprinter");
+  sprinterDeck.shuffle(sprinterDeck.drawPile);
+  rollerDeck = new RacerDeck(getRollerDeck(), "Roller");
+  rollerDeck.shuffle(rollerDeck.drawPile);
+  
+  sprinterDeck.setDeckInfo(sprinterDeckInfo, sprinterExhaustInfo);
+  rollerDeck.setDeckInfo(rollerDeckInfo, rollerExhaustInfo);
+}
+updateMenuButtons();
 
 // Shared function for card drawing and selection
 function handleCardDraw(
@@ -526,6 +636,9 @@ function handleCardDraw(
           // Disable the draw button
           drawButton.classList.remove("highlighted");
           drawButton.disabled = true;
+
+          // Save game state after card selection
+          saveGameState();
 
           // Check if both cards are selected and advance
           if (selectedSprinterCard && selectedRollerCard) {
@@ -608,6 +721,7 @@ exhaustSprinterButton.addEventListener("click", () => {
     exhaustSprinterButton.classList.remove("exhaustionAdded");
     sprinterDeck.removeExhaustion();
     sprinterDeck.setDeckInfo(sprinterDeckInfo, sprinterExhaustInfo);
+    saveGameState();
     return;
   }
 
@@ -616,6 +730,7 @@ exhaustSprinterButton.addEventListener("click", () => {
   sprinterDeck.setDeckInfo(sprinterDeckInfo, sprinterExhaustInfo);
   // hide button
   exhaustSprinterButton.classList.add("exhaustionAdded");
+  saveGameState();
 });
 
 exhaustRollerButton.addEventListener("click", () => {
@@ -623,6 +738,7 @@ exhaustRollerButton.addEventListener("click", () => {
     exhaustRollerButton.classList.remove("exhaustionAdded");
     rollerDeck.removeExhaustion();
     rollerDeck.setDeckInfo(rollerDeckInfo, rollerExhaustInfo);
+    saveGameState();
     return;
   }
   // add exhaustion
@@ -630,6 +746,7 @@ exhaustRollerButton.addEventListener("click", () => {
   rollerDeck.setDeckInfo(rollerDeckInfo, rollerExhaustInfo);
   // hide button
   exhaustRollerButton.classList.add("exhaustionAdded");
+  saveGameState();
 });
 
 // Reset Race Button with Confirmation
@@ -683,6 +800,15 @@ setupForm.addEventListener("submit", (event) => {
 
   mainGame.style.display = "block";
   pregameMenu.style.display = "none";
+  
+  // Save initial game state
+  saveGameState();
+});
+
+// Continue game button
+const continueGameButton = document.getElementById("continueGameButton");
+continueGameButton.addEventListener("click", () => {
+  continueGame();
 });
 
 exhaustRoller2.addEventListener("click", () => {
@@ -690,6 +816,7 @@ exhaustRoller2.addEventListener("click", () => {
     exhaustRoller2.classList.remove("exhaustionAdded");
     rollerDeck.removeExhaustion();
     rollerDeck.setDeckInfo(rollerDeckInfo, rollerExhaustInfo);
+    saveGameState();
     return;
   }
   // add exhaustion
@@ -697,6 +824,7 @@ exhaustRoller2.addEventListener("click", () => {
   rollerDeck.setDeckInfo(rollerDeckInfo, rollerExhaustInfo);
   // hide button
   exhaustRoller2.classList.add("exhaustionAdded");
+  saveGameState();
 });
 
 exhaustSprinter2.addEventListener("click", () => {
@@ -704,6 +832,7 @@ exhaustSprinter2.addEventListener("click", () => {
     exhaustSprinter2.classList.remove("exhaustionAdded");
     sprinterDeck.removeExhaustion();
     sprinterDeck.setDeckInfo(sprinterDeckInfo, sprinterExhaustInfo);
+    saveGameState();
     return;
   }
   // add exhaustion
@@ -711,6 +840,7 @@ exhaustSprinter2.addEventListener("click", () => {
   sprinterDeck.setDeckInfo(sprinterDeckInfo, sprinterExhaustInfo);
   // hide button
   exhaustSprinter2.classList.add("exhaustionAdded");
+  saveGameState();
 });
 
 function checkForBoostScene() {
