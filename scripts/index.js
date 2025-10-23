@@ -4,6 +4,8 @@ let rollerDeck = {};
 let selectedSprinterCard = null;
 let selectedRollerCard = null;
 
+let gameMode = "standard"; // Track current game mode: "standard" or "steroid"
+
 // html elements
 const mainGame = document.getElementById("mainGame");
 const pregameMenu = document.getElementById("pregameMenu");
@@ -646,6 +648,19 @@ setupForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const formData = new FormData(setupForm);
 
+  // Get selected game mode from radio buttons
+  const selectedGameMode = document.querySelector('input[name="gameMode"]:checked');
+  if (selectedGameMode) {
+    gameMode = selectedGameMode.value;
+  }
+
+  // Show/hide Race Over button based on game mode
+  if (gameMode === "steroid") {
+    endRaceButton.style.display = "block";
+  } else {
+    endRaceButton.style.display = "none";
+  }
+
   const addSprinterExhaustion = Number(formData.get("addSprinterExhaustion"));
   const addRollerExhaustion = Number(formData.get("addRollerExhaustion"));
   const removeFromSprinter = formData
@@ -705,22 +720,28 @@ function checkForBoostScene() {
     !sprinterSelection.firstChild.classList.contains("hide") &&
     !rollerSelection.firstChild.classList.contains("hide")
   ) {
-    const sprinterIsExhaustion =
-      selectedSprinterCard.value === 2 &&
-      selectedSprinterCard.type === "EXHAUSTION" &&
-      sprinterSteroidPointsUsed < steroidPointsPerRider;
+    // Only show boost scene if game mode is "steroid"
+    if (gameMode === "steroid") {
+      const sprinterIsExhaustion =
+        selectedSprinterCard.value === 2 &&
+        selectedSprinterCard.type === "EXHAUSTION" &&
+        sprinterSteroidPointsUsed < steroidPointsPerRider;
 
-    const rollerIsExhaustion =
-      selectedRollerCard.value === 2 &&
-      selectedRollerCard.type === "EXHAUSTION" &&
-      rollerSteroidPointsUsed < steroidPointsPerRider;
+      const rollerIsExhaustion =
+        selectedRollerCard.value === 2 &&
+        selectedRollerCard.type === "EXHAUSTION" &&
+        rollerSteroidPointsUsed < steroidPointsPerRider;
 
-    if (sprinterIsExhaustion || rollerIsExhaustion) {
-      handleBoostSelection(selectedSprinterCard, "sprinter");
-      handleBoostSelection(selectedRollerCard, "roller");
-      cheatScene.style.display = "flex"; // Update to 'flex'
-      drawCardPhase.style.display = "none";
+      if (sprinterIsExhaustion || rollerIsExhaustion) {
+        handleBoostSelection(selectedSprinterCard, "sprinter");
+        handleBoostSelection(selectedRollerCard, "roller");
+        cheatScene.style.display = "flex"; // Update to 'flex'
+        drawCardPhase.style.display = "none";
+      } else {
+        proceedToMoveRiders();
+      }
     } else {
+      // In standard mode, skip boost scene entirely
       proceedToMoveRiders();
     }
   }
