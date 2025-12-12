@@ -16,17 +16,17 @@ function saveGameState() {
       drawPile: sprinterDeck.drawPile,
       recyclePile: sprinterDeck.recyclePile,
       discardPile: sprinterDeck.discardPile,
-      type: sprinterDeck.type
+      type: sprinterDeck.type,
     },
     rollerDeck: {
       drawPile: rollerDeck.drawPile,
       recyclePile: rollerDeck.recyclePile,
       discardPile: rollerDeck.discardPile,
-      type: rollerDeck.type
+      type: rollerDeck.type,
     },
     sprinterSteroidPointsUsed,
     rollerSteroidPointsUsed,
-    gameActive: true
+    gameActive: true,
   };
   localStorage.setItem(GAME_STATE_KEY, JSON.stringify(gameState));
 }
@@ -445,7 +445,7 @@ class RacerDeck {
 function reset() {
   // Clear localStorage
   clearGameState();
-  
+
   gameStatus.style.color = "orange";
   sprinterSelection.innerHTML = "";
   rollerSelection.innerHTML = "";
@@ -487,7 +487,7 @@ function reset() {
 
   sprinterDeck.setDeckInfo(sprinterDeckInfo, sprinterExhaustInfo);
   rollerDeck.setDeckInfo(rollerDeckInfo, rollerExhaustInfo);
-  
+
   // Update menu to show/hide continue button
   updateMenuButtons();
 }
@@ -526,53 +526,118 @@ function updateMenuButtons() {
 function continueGame() {
   const savedState = loadGameState();
   if (!savedState) return;
-  
+
   // Restore game mode
   gameMode = savedState.gameMode;
-  
+
   // Restore decks
   sprinterDeck = new RacerDeck([], "Sprinter");
-  sprinterDeck.drawPile = savedState.sprinterDeck.drawPile.map(c => new Card(c.value, c.type));
-  sprinterDeck.recyclePile = savedState.sprinterDeck.recyclePile.map(c => new Card(c.value, c.type));
-  sprinterDeck.discardPile = savedState.sprinterDeck.discardPile.map(c => new Card(c.value, c.type));
-  
+  sprinterDeck.drawPile = savedState.sprinterDeck.drawPile.map(
+    (c) => new Card(c.value, c.type)
+  );
+  sprinterDeck.recyclePile = savedState.sprinterDeck.recyclePile.map(
+    (c) => new Card(c.value, c.type)
+  );
+  sprinterDeck.discardPile = savedState.sprinterDeck.discardPile.map(
+    (c) => new Card(c.value, c.type)
+  );
+
   rollerDeck = new RacerDeck([], "Roller");
-  rollerDeck.drawPile = savedState.rollerDeck.drawPile.map(c => new Card(c.value, c.type));
-  rollerDeck.recyclePile = savedState.rollerDeck.recyclePile.map(c => new Card(c.value, c.type));
-  rollerDeck.discardPile = savedState.rollerDeck.discardPile.map(c => new Card(c.value, c.type));
-  
+  rollerDeck.drawPile = savedState.rollerDeck.drawPile.map(
+    (c) => new Card(c.value, c.type)
+  );
+  rollerDeck.recyclePile = savedState.rollerDeck.recyclePile.map(
+    (c) => new Card(c.value, c.type)
+  );
+  rollerDeck.discardPile = savedState.rollerDeck.discardPile.map(
+    (c) => new Card(c.value, c.type)
+  );
+
   // Restore steroid points
   sprinterSteroidPointsUsed = savedState.sprinterSteroidPointsUsed;
   rollerSteroidPointsUsed = savedState.rollerSteroidPointsUsed;
-  
+
   // Show/hide Race Over button based on game mode
   if (gameMode === "steroid") {
     endRaceButton.style.display = "block";
   } else {
     endRaceButton.style.display = "none";
   }
-  
+
   // Update UI
   sprinterDeck.setDeckInfo(sprinterDeckInfo, sprinterExhaustInfo);
   rollerDeck.setDeckInfo(rollerDeckInfo, rollerExhaustInfo);
-  
+
+  // Reset to draw card phase (card selection step)
+  drawCardPhase.style.display = "flex";
+  moveRacersPhase.style.display = "none";
+  cheatScene.style.display = "none";
+  drugTestingScene.style.display = "none";
+
+  // Reset card selections
+  sprinterSelection.innerHTML = "";
+  rollerSelection.innerHTML = "";
+  sprinterSelection.parentElement.style.display = "flex";
+  rollerSelection.parentElement.style.display = "flex";
+
+  // Enable draw buttons
+  drawSprinterButton.disabled = false;
+  drawRollerButton.disabled = false;
+
+  // Clear any card selection in progress
+  cardSelectionDiv.innerHTML = "";
+
+  // Reset selected cards
+  selectedSprinterCard = null;
+  selectedRollerCard = null;
+
+  // Reset exhaustion button states for this turn
+  exhaustSprinterButton.classList.remove("exhaustionAdded");
+  exhaustRollerButton.classList.remove("exhaustionAdded");
+  exhaustSprinter2.classList.remove("exhaustionAdded");
+  exhaustRoller2.classList.remove("exhaustionAdded");
+
+  gameStatus.style.color = "orange";
+
   // Show game, hide menu
   mainGame.style.display = "block";
   pregameMenu.style.display = "none";
 }
 
 // Initialize on page load
-if (!hasSavedGame()) {
-  // Only initialize fresh decks if no saved game exists
+function initializeFreshDecks() {
   sprinterDeck = new RacerDeck(getSprinterDeck(), "Sprinter");
   sprinterDeck.shuffle(sprinterDeck.drawPile);
   rollerDeck = new RacerDeck(getRollerDeck(), "Roller");
   rollerDeck.shuffle(rollerDeck.drawPile);
-  
+
   sprinterDeck.setDeckInfo(sprinterDeckInfo, sprinterExhaustInfo);
   rollerDeck.setDeckInfo(rollerDeckInfo, rollerExhaustInfo);
 }
-updateMenuButtons();
+
+// Check for saved game on page load and prompt user
+window.addEventListener("DOMContentLoaded", () => {
+  if (hasSavedGame()) {
+    const continuePrompt = confirm(
+      "You have an active game in progress.\n\n" +
+        "OK = Continue your game\n" +
+        "Cancel = Start fresh"
+    );
+
+    if (continuePrompt) {
+      // Continue game - restore to draw card phase
+      continueGame();
+    } else {
+      // Start fresh - clear storage and show menu
+      clearGameState();
+      initializeFreshDecks();
+      updateMenuButtons();
+    }
+  } else {
+    initializeFreshDecks();
+    updateMenuButtons();
+  }
+});
 
 // Shared function for card drawing and selection
 function handleCardDraw(
@@ -766,7 +831,9 @@ setupForm.addEventListener("submit", (event) => {
   const formData = new FormData(setupForm);
 
   // Get selected game mode from radio buttons
-  const selectedGameMode = document.querySelector('input[name="gameMode"]:checked');
+  const selectedGameMode = document.querySelector(
+    'input[name="gameMode"]:checked'
+  );
   if (selectedGameMode) {
     gameMode = selectedGameMode.value;
   }
@@ -800,7 +867,7 @@ setupForm.addEventListener("submit", (event) => {
 
   mainGame.style.display = "block";
   pregameMenu.style.display = "none";
-  
+
   // Save initial game state
   saveGameState();
 });
