@@ -924,7 +924,7 @@ function handleCardDraw(
     drawButton.classList.add("highlighted");
 
     const drawnCards = deck.draw();
-    deck.setDeckInfo(deckInfo, exhaustInfo);
+    // Don't update deck info yet - wait until card is selected
     const drawnCardButtons = [];
 
     for (const drawnCard of drawnCards) {
@@ -969,8 +969,7 @@ function handleCardDraw(
           drawButton.classList.remove("highlighted");
           drawButton.disabled = true;
 
-          // Save game state after card selection
-          saveGameState();
+          // Don't save state yet - wait until both cards selected and move phase reached
 
           // Check if both cards are selected and advance
           if (selectedSprinterCard && selectedRollerCard) {
@@ -1275,10 +1274,7 @@ function processRecovery() {
     recoveryMessagesDiv.innerHTML = "";
   }
 
-  // Save state after recovery
-  if (messages.length > 0) {
-    saveGameState();
-  }
+  // Don't save state here - will save when reaching move phase
 }
 
 function proceedToMoveRiders() {
@@ -1298,4 +1294,7 @@ function proceedToMoveRiders() {
 
   selectedSprinterCard = null;
   selectedRollerCard = null;
+
+  // Save game state now that round is complete
+  saveGameState();
 }
