@@ -9,6 +9,7 @@ let gameMode = "standard"; // Track current game mode: "standard" or "steroid"
 // LocalStorage functions
 const GAME_STATE_KEY = "flammeRougeGameState";
 
+//
 function saveGameState() {
   const gameState = {
     gameMode,
