@@ -1,13 +1,13 @@
 // Symbol paths
 const SYMBOLS = {
-  RECOVERY: "public/symbols/recovery.png",
-  RELENTLESS: "public/symbols/relentless.png",
-  BREAKAWAY: "public/symbols/breakaway.png",
-  CHASE: "public/symbols/chase.png",
-  NIMBLE: "public/symbols/nimble.png",
-  STRONG_DESCENTS: "public/symbols/strong_descents.png",
-  STRONG_ASCENTS_6: "public/symbols/strong_ascents_6.png",
-  STRONG_ASCENTS_7: "public/symbols/strong_ascents_7.png",
+  RECOVERY: "/public/symbols/recovery.png",
+  RELENTLESS: "/public/symbols/relentless.png",
+  BREAKAWAY: "/public/symbols/breakaway.png",
+  CHASE: "/public/symbols/chase.png",
+  NIMBLE: "/public/symbols/nimble.png",
+  STRONG_DESCENTS: "/public/symbols/strong_descents.png",
+  STRONG_ASCENTS_6: "/public/symbols/strong_ascents_6.png",
+  STRONG_ASCENTS_7: "/public/symbols/strong_ascents_7.png",
 };
 
 // Specialist configurations
