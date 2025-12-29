@@ -1,8 +1,149 @@
+// Symbol paths
+const SYMBOLS = {
+  RECOVERY: "/symbols/recovery.png",
+  RELENTLESS: "/symbols/relentless.png",
+  BREAKAWAY: "/symbols/breakaway.png",
+  CHASE: "/symbols/chase.png",
+  NIMBLE: "/symbols/nimble.png",
+  STRONG_DESCENTS: "/symbols/strong_descents.png",
+  STRONG_ASCENTS_6: "/symbols/strong_ascents_6.png",
+  STRONG_ASCENTS_7: "/symbols/strong_ascents_7.png",
+};
+
+// Specialist configurations
+const SPECIALISTS = {
+  baroudeur: {
+    name: "Baroudeur",
+    riderType: "ROULEUR",
+    remove: [3, 5, 6, 6, 7],
+    add: [
+      { value: 5, type: "MOVEMENT", symbols: ["BREAKAWAY", "RELENTLESS"] },
+      { value: 6, type: "MOVEMENT", symbols: ["BREAKAWAY", "RELENTLESS"] },
+      { value: 6, type: "MOVEMENT", symbols: ["BREAKAWAY", "RELENTLESS"] },
+      { value: 7, type: "MOVEMENT", symbols: ["BREAKAWAY", "RELENTLESS"] },
+    ],
+  },
+  flandrien: {
+    name: "Flandrien",
+    riderType: "ROULEUR",
+    remove: [3, 4, 5, 6, 7],
+    add: [
+      { value: 3, type: "MOVEMENT", symbols: ["CHASE"] },
+      { value: 4, type: "MOVEMENT", symbols: ["CHASE"] },
+      { value: 5, type: "MOVEMENT", symbols: ["CHASE"] },
+      { value: 6, type: "MOVEMENT", symbols: ["CHASE"] },
+      { value: 7, type: "MOVEMENT", symbols: ["CHASE"] },
+    ],
+  },
+  grimpeur: {
+    name: "Grimpeur",
+    riderType: "ROULEUR",
+    remove: [3, 3, 3, 6, 6, 6],
+    add: [
+      { value: 7, type: "MOVEMENT", symbols: ["STRONG_DESCENTS"] },
+      { value: 7, type: "MOVEMENT", symbols: ["STRONG_DESCENTS"] },
+      { value: 7, type: "MOVEMENT", symbols: ["STRONG_DESCENTS"] },
+      { value: 6, type: "MOVEMENT", symbols: ["STRONG_ASCENTS_6"] },
+      { value: 6, type: "MOVEMENT", symbols: ["STRONG_ASCENTS_6"] },
+      { value: 6, type: "MOVEMENT", symbols: ["STRONG_ASCENTS_6"] },
+    ],
+  },
+  domestique: {
+    name: "Domestique",
+    riderType: "ROULEUR",
+    remove: [4, 4, 4],
+    add: [
+      { value: 4, type: "MOVEMENT", symbols: ["RECOVERY"] },
+      { value: 4, type: "MOVEMENT", symbols: ["RECOVERY"] },
+      { value: 4, type: "MOVEMENT", symbols: ["RECOVERY"] },
+    ],
+  },
+  superRouleur: {
+    name: "Super Rouleur",
+    riderType: "ROULEUR",
+    remove: [5, 5, 6, 6],
+    add: [
+      { value: 5, type: "MOVEMENT", symbols: ["NIMBLE"] },
+      { value: 5, type: "MOVEMENT", symbols: ["NIMBLE"] },
+      { value: 6, type: "MOVEMENT", symbols: ["NIMBLE"] },
+      { value: 6, type: "MOVEMENT", symbols: ["NIMBLE"] },
+    ],
+  },
+  puncheur: {
+    name: "Puncheur",
+    riderType: "ROULEUR",
+    remove: [4, 6],
+    add: [{ value: 8, type: "MOVEMENT", symbols: ["RELENTLESS"] }],
+  },
+  descender: {
+    name: "Descender",
+    riderType: "SPRINTER",
+    remove: [3, 3, 3],
+    add: [
+      { value: 7, type: "MOVEMENT", symbols: ["STRONG_DESCENTS", "RECOVERY"] },
+      { value: 7, type: "MOVEMENT", symbols: ["STRONG_DESCENTS", "RECOVERY"] },
+      { value: 7, type: "MOVEMENT", symbols: ["STRONG_DESCENTS", "RECOVERY"] },
+    ],
+  },
+  polyvalent: {
+    name: "Polyvalent",
+    riderType: "SPRINTER",
+    remove: [4, 4, 4],
+    add: [
+      { value: 3, type: "MOVEMENT", symbols: [] },
+      { value: 6, type: "MOVEMENT", symbols: [] },
+      { value: 6, type: "MOVEMENT", symbols: [] },
+    ],
+  },
+  mountaineer: {
+    name: "Mountaineer",
+    riderType: "SPRINTER",
+    remove: [2, 3, 5, 9],
+    add: [
+      { value: 4, type: "MOVEMENT", symbols: [] },
+      { value: 7, type: "MOVEMENT", symbols: ["STRONG_ASCENTS_7"] },
+      { value: 7, type: "MOVEMENT", symbols: ["STRONG_ASCENTS_7"] },
+    ],
+  },
+  squirrel: {
+    name: "Squirrel",
+    riderType: "SPRINTER",
+    remove: [2, 9],
+    add: [
+      { value: 7, type: "MOVEMENT", symbols: ["BREAKAWAY", "CHASE"] },
+      { value: 7, type: "MOVEMENT", symbols: ["BREAKAWAY", "CHASE"] },
+    ],
+  },
+  superSprinteur: {
+    name: "Super Sprinteur",
+    riderType: "SPRINTER",
+    remove: [5, 9, 9],
+    add: [
+      { value: 4, type: "MOVEMENT", symbols: [] },
+      { value: 10, type: "MOVEMENT", symbols: [] },
+      { value: 11, type: "MOVEMENT", symbols: [] },
+    ],
+  },
+  flahute: {
+    name: "Flahute",
+    riderType: "SPRINTER",
+    remove: [4, 9, 9],
+    add: [
+      { value: 5, type: "MOVEMENT", symbols: [] },
+      { value: 9, type: "MOVEMENT", symbols: ["NIMBLE"] },
+      { value: 9, type: "MOVEMENT", symbols: ["NIMBLE"] },
+    ],
+  },
+};
+
 let sprinterDeck = {};
 let rollerDeck = {};
 
 let selectedSprinterCard = null;
 let selectedRollerCard = null;
+
+let sprinterSpecialistKey = "";
+let rollerSpecialistKey = "";
 
 let gameMode = "standard"; // Track current game mode: "standard" or "steroid"
 
@@ -14,19 +155,45 @@ function saveGameState() {
   const gameState = {
     gameMode,
     sprinterDeck: {
-      drawPile: sprinterDeck.drawPile,
-      recyclePile: sprinterDeck.recyclePile,
-      discardPile: sprinterDeck.discardPile,
+      drawPile: sprinterDeck.drawPile.map((c) => ({
+        value: c.value,
+        type: c.type,
+        symbols: c.symbols,
+      })),
+      recyclePile: sprinterDeck.recyclePile.map((c) => ({
+        value: c.value,
+        type: c.type,
+        symbols: c.symbols,
+      })),
+      discardPile: sprinterDeck.discardPile.map((c) => ({
+        value: c.value,
+        type: c.type,
+        symbols: c.symbols,
+      })),
       type: sprinterDeck.type,
     },
     rollerDeck: {
-      drawPile: rollerDeck.drawPile,
-      recyclePile: rollerDeck.recyclePile,
-      discardPile: rollerDeck.discardPile,
+      drawPile: rollerDeck.drawPile.map((c) => ({
+        value: c.value,
+        type: c.type,
+        symbols: c.symbols,
+      })),
+      recyclePile: rollerDeck.recyclePile.map((c) => ({
+        value: c.value,
+        type: c.type,
+        symbols: c.symbols,
+      })),
+      discardPile: rollerDeck.discardPile.map((c) => ({
+        value: c.value,
+        type: c.type,
+        symbols: c.symbols,
+      })),
       type: rollerDeck.type,
     },
     sprinterSteroidPointsUsed,
     rollerSteroidPointsUsed,
+    sprinterSpecialistKey,
+    rollerSpecialistKey,
     gameActive: true,
   };
   localStorage.setItem(GAME_STATE_KEY, JSON.stringify(gameState));
@@ -346,9 +513,10 @@ endRaceButton.addEventListener("click", () => {
 });
 
 class Card {
-  constructor(value, type) {
+  constructor(value, type, symbols = []) {
     this.value = value;
     this.type = type || "MOVEMENT";
+    this.symbols = symbols;
   }
 }
 
@@ -395,16 +563,14 @@ class RacerDeck {
   }
 
   select(selectedCard, drawnCards) {
-    const selectedIndex = drawnCards.findIndex(
-      (card) => card.value === selectedCard.value
-    );
+    const selectedIndex = drawnCards.indexOf(selectedCard);
     this.recyclePile.push(
       ...drawnCards.filter((card, index) => index !== selectedIndex)
     );
   }
 
   addExhaustion() {
-    this.recyclePile.push(new Card(2, "EXHAUSTION"));
+    this.recyclePile.push(new Card(2, "EXHAUSTION", []));
   }
 
   removeExhaustion() {
@@ -441,6 +607,21 @@ class RacerDeck {
     ).length;
     return recycleExhaustCount + drawPileExhaustCount;
   }
+
+  hasRecycledExhaustion() {
+    return this.recyclePile.some((card) => card.type === "EXHAUSTION");
+  }
+
+  recoverOneExhaustion() {
+    const exhaustionIndex = this.recyclePile.findIndex(
+      (card) => card.type === "EXHAUSTION"
+    );
+    if (exhaustionIndex !== -1) {
+      this.recyclePile.splice(exhaustionIndex, 1);
+      return true;
+    }
+    return false;
+  }
 }
 
 function reset() {
@@ -453,6 +634,12 @@ function reset() {
   drawCardPhase.style.display = "flex"; // Update to 'flex'
   moveRacersPhase.style.display = "none";
   drugTestingScene.style.display = "none";
+
+  // Clear recovery messages
+  const recoveryMessagesDiv = document.getElementById("recoveryMessages");
+  if (recoveryMessagesDiv) {
+    recoveryMessagesDiv.innerHTML = "";
+  }
 
   sprinterSelection.parentElement.style.display = "flex";
   rollerSelection.parentElement.style.display = "flex";
@@ -503,14 +690,88 @@ function getFakeCard() {
 
 function getSprinterDeck() {
   return [2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 9, 9, 9].map(
-    (val) => new Card(val)
+    (val) => new Card(val, "MOVEMENT", [])
   );
 }
 
 function getRollerDeck() {
   return [3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7].map(
-    (val) => new Card(val)
+    (val) => new Card(val, "MOVEMENT", [])
   );
+}
+
+function buildDeckForRider(riderType, specialistKey) {
+  let baseDeck = riderType === "SPRINTER" ? getSprinterDeck() : getRollerDeck();
+
+  if (!specialistKey || specialistKey === "") {
+    return baseDeck;
+  }
+
+  const specialist = SPECIALISTS[specialistKey];
+  if (!specialist) {
+    return baseDeck;
+  }
+
+  // Remove cards
+  for (const valueToRemove of specialist.remove) {
+    const removeIndex = baseDeck.findIndex(
+      (card) => card.value === valueToRemove
+    );
+    if (removeIndex !== -1) {
+      baseDeck.splice(removeIndex, 1);
+    }
+  }
+
+  // Add cards with symbols
+  for (const cardConfig of specialist.add) {
+    const symbolPaths = cardConfig.symbols.map((key) => SYMBOLS[key]);
+    baseDeck.push(new Card(cardConfig.value, cardConfig.type, symbolPaths));
+  }
+
+  return baseDeck;
+}
+
+function cardHasSymbol(card, symbolKey) {
+  if (!card.symbols || card.symbols.length === 0) return false;
+  const symbolPath = SYMBOLS[symbolKey];
+  return card.symbols.includes(symbolPath);
+}
+
+function renderCardButton(card, overrideValue = null) {
+  const cardButton = document.createElement("BUTTON");
+  cardButton.classList.add("cardButton");
+
+  const displayValue = overrideValue !== null ? overrideValue : card.value;
+
+  const valueDiv = document.createElement("DIV");
+  valueDiv.classList.add("cardValue");
+  valueDiv.innerText = displayValue;
+
+  if (card.type === "EXHAUSTION") {
+    valueDiv.style.color = "#aa0000";
+  }
+
+  cardButton.appendChild(valueDiv);
+
+  if (card.symbols && card.symbols.length > 0) {
+    if (card.symbols[0]) {
+      const leftImg = document.createElement("IMG");
+      leftImg.classList.add("cardSymbol", "left");
+      leftImg.src = card.symbols[0];
+      leftImg.alt = "symbol";
+      cardButton.appendChild(leftImg);
+    }
+
+    if (card.symbols[1]) {
+      const rightImg = document.createElement("IMG");
+      rightImg.classList.add("cardSymbol", "right");
+      rightImg.src = card.symbols[1];
+      rightImg.alt = "symbol";
+      cardButton.appendChild(rightImg);
+    }
+  }
+
+  return cardButton;
 }
 
 // Initialize menu buttons based on saved game
@@ -531,27 +792,31 @@ function continueGame() {
   // Restore game mode
   gameMode = savedState.gameMode;
 
+  // Restore specialist selections
+  sprinterSpecialistKey = savedState.sprinterSpecialistKey || "";
+  rollerSpecialistKey = savedState.rollerSpecialistKey || "";
+
   // Restore decks
   sprinterDeck = new RacerDeck([], "Sprinter");
   sprinterDeck.drawPile = savedState.sprinterDeck.drawPile.map(
-    (c) => new Card(c.value, c.type)
+    (c) => new Card(c.value, c.type, c.symbols || [])
   );
   sprinterDeck.recyclePile = savedState.sprinterDeck.recyclePile.map(
-    (c) => new Card(c.value, c.type)
+    (c) => new Card(c.value, c.type, c.symbols || [])
   );
   sprinterDeck.discardPile = savedState.sprinterDeck.discardPile.map(
-    (c) => new Card(c.value, c.type)
+    (c) => new Card(c.value, c.type, c.symbols || [])
   );
 
   rollerDeck = new RacerDeck([], "Roller");
   rollerDeck.drawPile = savedState.rollerDeck.drawPile.map(
-    (c) => new Card(c.value, c.type)
+    (c) => new Card(c.value, c.type, c.symbols || [])
   );
   rollerDeck.recyclePile = savedState.rollerDeck.recyclePile.map(
-    (c) => new Card(c.value, c.type)
+    (c) => new Card(c.value, c.type, c.symbols || [])
   );
   rollerDeck.discardPile = savedState.rollerDeck.discardPile.map(
-    (c) => new Card(c.value, c.type)
+    (c) => new Card(c.value, c.type, c.symbols || [])
   );
 
   // Restore steroid points
@@ -597,6 +862,12 @@ function continueGame() {
   exhaustRollerButton.classList.remove("exhaustionAdded");
   exhaustSprinter2.classList.remove("exhaustionAdded");
   exhaustRoller2.classList.remove("exhaustionAdded");
+
+  // Clear recovery messages
+  const recoveryMessagesDiv = document.getElementById("recoveryMessages");
+  if (recoveryMessagesDiv) {
+    recoveryMessagesDiv.innerHTML = "";
+  }
 
   gameStatus.style.color = "orange";
 
@@ -654,18 +925,12 @@ function handleCardDraw(
     drawButton.classList.add("highlighted");
 
     const drawnCards = deck.draw();
-    deck.setDeckInfo(deckInfo, exhaustInfo);
+    // Don't update deck info yet - wait until card is selected
     const drawnCardButtons = [];
 
     for (const drawnCard of drawnCards) {
-      const cardButton = document.createElement("BUTTON");
-      cardButton.classList.add("cardButton");
+      const cardButton = renderCardButton(drawnCard);
       drawnCardButtons.push(cardButton);
-
-      cardButton.innerText = drawnCard.value;
-      if (drawnCard.type === "EXHAUSTION") {
-        cardButton.style.color = "#aa0000";
-      }
 
       cardButton.addEventListener("click", () => {
         if (!cardButton.classList.contains("highlightCard")) {
@@ -683,7 +948,9 @@ function handleCardDraw(
 
           // Update selection box
           selectionBox.innerHTML = "";
-          selectionBox.appendChild(cardButton);
+          const selectedCardDisplay = renderCardButton(drawnCard);
+          selectedCardDisplay.disabled = true;
+          selectionBox.appendChild(selectedCardDisplay);
 
           // Update the selected card reference
           if (riderType === "sprinter") {
@@ -703,8 +970,7 @@ function handleCardDraw(
           drawButton.classList.remove("highlighted");
           drawButton.disabled = true;
 
-          // Save game state after card selection
-          saveGameState();
+          // Don't save state yet - wait until both cards selected and move phase reached
 
           // Check if both cards are selected and advance
           if (selectedSprinterCard && selectedRollerCard) {
@@ -762,6 +1028,12 @@ nextTurnButtons.forEach((button) => {
       exhaustRoller2.classList.remove("exhaustionAdded");
       drawSprinterButton.disabled = false;
       drawRollerButton.disabled = false;
+
+      // Clear recovery messages
+      const recoveryMessagesDiv = document.getElementById("recoveryMessages");
+      if (recoveryMessagesDiv) {
+        recoveryMessagesDiv.innerHTML = "";
+      }
 
       // resets drug scene
       rollerTestResultMessage.textContent = "";
@@ -846,16 +1118,40 @@ setupForm.addEventListener("submit", (event) => {
     endRaceButton.style.display = "none";
   }
 
+  // Get specialist selections
+  sprinterSpecialistKey = formData.get("sprinterSpecialist") || "";
+  rollerSpecialistKey = formData.get("rouleurSpecialist") || "";
+
+  // Build decks with specialists
+  const sprinterCards = buildDeckForRider("SPRINTER", sprinterSpecialistKey);
+  const rollerCards = buildDeckForRider("ROULEUR", rollerSpecialistKey);
+
+  sprinterDeck = new RacerDeck(sprinterCards, "Sprinter");
+  rollerDeck = new RacerDeck(rollerCards, "Roller");
+
+  // Shuffle decks
+  sprinterDeck.shuffle(sprinterDeck.drawPile);
+  rollerDeck.shuffle(rollerDeck.drawPile);
+
   const addSprinterExhaustion = Number(formData.get("addSprinterExhaustion"));
   const addRollerExhaustion = Number(formData.get("addRollerExhaustion"));
-  const removeFromSprinter = formData
-    .get("removeFromSprinter")
-    .split(",")
-    .map((a) => Number(a));
-  const removeFromRoller = formData
-    .get("removeFromRoller")
-    .split(",")
-    .map((a) => Number(a));
+
+  // Handle manual card removal (after specialist deck building)
+  const removeFromSprinterStr = formData.get("removeFromSprinter").trim();
+  const removeFromRollerStr = formData.get("removeFromRoller").trim();
+
+  const removeFromSprinter = removeFromSprinterStr
+    ? removeFromSprinterStr
+        .split(",")
+        .map((a) => Number(a))
+        .filter((n) => !isNaN(n))
+    : [];
+  const removeFromRoller = removeFromRollerStr
+    ? removeFromRollerStr
+        .split(",")
+        .map((a) => Number(a))
+        .filter((n) => !isNaN(n))
+    : [];
 
   for (let i = 0; i < addSprinterExhaustion; i++) sprinterDeck.addExhaustion();
   for (let i = 0; i < addRollerExhaustion; i++) rollerDeck.addExhaustion();
@@ -918,6 +1214,9 @@ function checkForBoostScene() {
     !sprinterSelection.firstChild.classList.contains("hide") &&
     !rollerSelection.firstChild.classList.contains("hide")
   ) {
+    // Process Recovery before showing boost scene or moving to move phase
+    processRecovery();
+
     // Only show boost scene if game mode is "steroid"
     if (gameMode === "steroid") {
       const sprinterIsExhaustion =
@@ -945,6 +1244,40 @@ function checkForBoostScene() {
   }
 }
 
+function processRecovery() {
+  const recoveryMessagesDiv = document.getElementById("recoveryMessages");
+  const messages = [];
+
+  // Check Sprinter for Recovery
+  if (cardHasSymbol(selectedSprinterCard, "RECOVERY")) {
+    if (sprinterDeck.recoverOneExhaustion()) {
+      messages.push("Sprinter: Recovery removed 1 Exhaustion from recycle.");
+      sprinterDeck.setDeckInfo(sprinterDeckInfo, sprinterExhaustInfo);
+    } else {
+      messages.push("Sprinter: Recovery found no Exhaustion to remove.");
+    }
+  }
+
+  // Check Rouleur for Recovery
+  if (cardHasSymbol(selectedRollerCard, "RECOVERY")) {
+    if (rollerDeck.recoverOneExhaustion()) {
+      messages.push("Rouleur: Recovery removed 1 Exhaustion from recycle.");
+      rollerDeck.setDeckInfo(rollerDeckInfo, rollerExhaustInfo);
+    } else {
+      messages.push("Rouleur: Recovery found no Exhaustion to remove.");
+    }
+  }
+
+  // Display messages
+  if (messages.length > 0) {
+    recoveryMessagesDiv.innerHTML = messages.join("<br>");
+  } else {
+    recoveryMessagesDiv.innerHTML = "";
+  }
+
+  // Don't save state here - will save when reaching move phase
+}
+
 function proceedToMoveRiders() {
   cheatScene.style.display = "none";
   confirmBoost.innerText = "Ride Clean";
@@ -962,4 +1295,7 @@ function proceedToMoveRiders() {
 
   selectedSprinterCard = null;
   selectedRollerCard = null;
+
+  // Save game state now that round is complete
+  saveGameState();
 }
