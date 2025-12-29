@@ -27,10 +27,23 @@
           </label>
         </div>
 
-        <h3 style="color: orange">Deck Setup</h3>
+        <h3 style="color: orange">Sprinter Setup</h3>
         <form id="setupForm">
+          <div class="formGroup">
+            <label for="sprinterSpecialist">Specialist:</label>
+            <select id="sprinterSpecialist" name="sprinterSpecialist">
+              <option value="">Standard Sprinter</option>
+              <option value="descender">Descender</option>
+              <option value="polyvalent">Polyvalent</option>
+              <option value="mountaineer">Mountaineer</option>
+              <option value="squirrel">Squirrel</option>
+              <option value="superSprinteur">Super Sprinteur</option>
+              <option value="flahute">Flahute</option>
+            </select>
+          </div>
+
           <div class="formGroup formGroupRow">
-            <label for="addSprinterExhaustion">Add Sprinter Exhaustion:</label>
+            <label for="addSprinterExhaustion">Add Exhaustion:</label>
             <select id="addSprinterExhaustion" name="addSprinterExhaustion">
               <option value="0">0</option>
               <option value="1">1</option>
@@ -46,8 +59,32 @@
             </select>
           </div>
 
+          <div class="formGroup">
+            <label for="removeFromSprinter">Remove Cards (e.g., 3,4):</label>
+            <input
+              type="text"
+              id="removeFromSprinter"
+              name="removeFromSprinter"
+            />
+          </div>
+
+          <h3 style="color: orange; margin-top: 20px">Rouleur Setup</h3>
+
+          <div class="formGroup">
+            <label for="rouleurSpecialist">Specialist:</label>
+            <select id="rouleurSpecialist" name="rouleurSpecialist">
+              <option value="">Standard Rouleur</option>
+              <option value="baroudeur">Baroudeur</option>
+              <option value="flandrien">Flandrien</option>
+              <option value="grimpeur">Grimpeur</option>
+              <option value="domestique">Domestique</option>
+              <option value="superRouleur">Super Rouleur</option>
+              <option value="puncheur">Puncheur</option>
+            </select>
+          </div>
+
           <div class="formGroup formGroupRow">
-            <label for="addRollerExhaustion">Add Rouleur Exhaustion:</label>
+            <label for="addRollerExhaustion">Add Exhaustion:</label>
             <select id="addRollerExhaustion" name="addRollerExhaustion">
               <option value="0">0</option>
               <option value="1">1</option>
@@ -64,20 +101,7 @@
           </div>
 
           <div class="formGroup">
-            <label for="removeFromSprinter"
-              >Remove From Sprinter (e.g., 3,4):</label
-            >
-            <input
-              type="text"
-              id="removeFromSprinter"
-              name="removeFromSprinter"
-            />
-          </div>
-
-          <div class="formGroup">
-            <label for="removeFromRoller"
-              >Remove From Rouleur (e.g., 3,4):</label
-            >
+            <label for="removeFromRoller">Remove Cards (e.g., 3,4):</label>
             <input type="text" id="removeFromRoller" name="removeFromRoller" />
           </div>
 
@@ -193,6 +217,12 @@
           <h3 id="gameStatus2" style="color: orange">
             Move Racers, Add Exhaustion
           </h3>
+
+          <!-- Recovery Messages -->
+          <div
+            id="recoveryMessages"
+            style="margin: 10px 0; text-align: center"
+          ></div>
 
           <!-- Line 2: Add Exhaust Buttons -->
           <button id="exhaustSprinter" class="drawButton exhaustionButton">
