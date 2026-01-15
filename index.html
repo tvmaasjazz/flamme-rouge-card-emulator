@@ -240,6 +240,11 @@
           <p>----------------------------------------</p>
           <p>Additional Actions</p>
 
+          <!-- Refresh Phase Button -->
+          <button id="refreshPhaseButton" class="drawButton">
+            Refresh Racer Decks
+          </button>
+
           <!-- Line 4: End Race Button -->
           <button id="endRace" class="drawButton raceOverButton">
             Race Over
@@ -247,6 +252,119 @@
 
           <!-- Line 5: Reset Race Button -->
           <button id="reset" class="resetButton">Reset Race</button>
+        </div>
+
+        <!-- Refresh Phase Screen -->
+        <div
+          id="refreshPhaseScreen"
+          class="refreshPhaseContainer"
+          style="display: none"
+        >
+          <h3 style="color: orange; text-align: center">Refresh Phase</h3>
+          <p style="text-align: center; margin-bottom: 20px">
+            Select cards to retrieve for each racer (max 24 energy, or 25 with
+            Refresh token)
+          </p>
+
+          <!-- Racer Selection -->
+          <div
+            id="refreshRacerSelection"
+            style="text-align: center; margin-bottom: 20px"
+          >
+            <button
+              id="refreshSprinterButton"
+              class="drawButton"
+              style="margin: 5px"
+            >
+              Refresh Sprinter
+            </button>
+            <button
+              id="refreshRollerButton"
+              class="drawButton"
+              style="margin: 5px"
+            >
+              Refresh Rouleur
+            </button>
+          </div>
+
+          <!-- Card Selection Interface (hidden initially) -->
+          <div id="refreshCardInterface" style="display: none">
+            <h4
+              id="refreshCurrentRacer"
+              style="color: orange; text-align: center"
+            ></h4>
+
+            <!-- Token Question -->
+            <div
+              id="refreshTokenQuestion"
+              style="text-align: center; margin-bottom: 15px"
+            >
+              <p>
+                Does this racer have the Refresh token? (Are they in the lead?)
+              </p>
+              <button id="hasTokenYes" class="boostButton">
+                Yes (+25 max)
+              </button>
+              <button id="hasTokenNo" class="boostButton">No (24 max)</button>
+            </div>
+
+            <!-- Energy Counter -->
+            <div
+              id="refreshEnergyCounter"
+              style="display: none; text-align: center; margin-bottom: 15px"
+            >
+              <h4>
+                Energy Selected: <span id="refreshEnergyValue">0</span> /
+                <span id="refreshEnergyMax">24</span>
+              </h4>
+            </div>
+
+            <!-- Discarded Cards (Available to Refresh) -->
+            <div id="refreshDiscardedSection" style="display: none">
+              <h4 style="text-align: center">Discarded Cards (Click to Add)</h4>
+              <div
+                id="refreshDiscardedCards"
+                class="cardContainer"
+                style="margin-bottom: 20px"
+              ></div>
+            </div>
+
+            <!-- Cards to Refresh -->
+            <div id="refreshSelectedSection" style="display: none">
+              <h4 style="text-align: center">
+                Cards to Refresh (Click to Remove)
+              </h4>
+              <div
+                id="refreshSelectedCards"
+                class="cardContainer"
+                style="margin-bottom: 20px"
+              ></div>
+            </div>
+
+            <!-- Confirm Button -->
+            <div
+              id="refreshConfirmSection"
+              style="display: none; text-align: center"
+            >
+              <button id="confirmRefreshRacer" class="drawButton">
+                Confirm Cards for This Racer
+              </button>
+            </div>
+          </div>
+
+          <!-- Return to Race Button (shown after both racers done) -->
+          <div
+            id="refreshCompleteSection"
+            style="display: none; text-align: center"
+          >
+            <p style="color: lightgreen; margin-bottom: 15px">
+              Both racers refreshed! Cards will be shuffled back into draw
+              piles.
+            </p>
+            <button id="returnToRaceButton" class="drawButton nextTurnButton">
+              Return to Race
+            </button>
+          </div>
         </div>
 
         <!-- Drug Testing Scene -->

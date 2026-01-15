@@ -1293,9 +1293,385 @@ function proceedToMoveRiders() {
   gameStatus2Text.style.display = "flex";
   gameStatus.style.color = "gray";
 
+  // Move selected cards to discard pile before clearing
+  if (selectedSprinterCard) {
+    sprinterDeck.discardPile.push(selectedSprinterCard);
+  }
+  if (selectedRollerCard) {
+    rollerDeck.discardPile.push(selectedRollerCard);
+  }
+
   selectedSprinterCard = null;
   selectedRollerCard = null;
 
   // Save game state now that round is complete
   saveGameState();
 }
+
+// ============================================
+// REFRESH PHASE FUNCTIONALITY
+// ============================================
+
+let refreshPhaseState = {
+  currentRacer: null, // 'sprinter' or 'roller'
+  sprinterDone: false,
+  rollerDone: false,
+  sprinterMaxEnergy: 24,
+  rollerMaxEnergy: 24,
+  sprinterSelectedCards: [],
+  rollerSelectedCards: [],
+  sprinterCurrentEnergy: 0,
+  rollerCurrentEnergy: 0,
+};
+
+// Get HTML elements for Refresh Phase
+const refreshPhaseButton = document.getElementById("refreshPhaseButton");
+const refreshPhaseScreen = document.getElementById("refreshPhaseScreen");
+const refreshSprinterButton = document.getElementById("refreshSprinterButton");
+const refreshRollerButton = document.getElementById("refreshRollerButton");
+const refreshCardInterface = document.getElementById("refreshCardInterface");
+const refreshTokenQuestion = document.getElementById("refreshTokenQuestion");
+const hasTokenYes = document.getElementById("hasTokenYes");
+const hasTokenNo = document.getElementById("hasTokenNo");
+const refreshEnergyCounter = document.getElementById("refreshEnergyCounter");
+const refreshEnergyValue = document.getElementById("refreshEnergyValue");
+const refreshEnergyMax = document.getElementById("refreshEnergyMax");
+const refreshDiscardedSection = document.getElementById(
+  "refreshDiscardedSection"
+);
+const refreshDiscardedCards = document.getElementById("refreshDiscardedCards");
+const refreshSelectedSection = document.getElementById(
+  "refreshSelectedSection"
+);
+const refreshSelectedCards = document.getElementById("refreshSelectedCards");
+const refreshConfirmSection = document.getElementById("refreshConfirmSection");
+const confirmRefreshRacer = document.getElementById("confirmRefreshRacer");
+const refreshCompleteSection = document.getElementById(
+  "refreshCompleteSection"
+);
+const returnToRaceButton = document.getElementById("returnToRaceButton");
+const refreshCurrentRacer = document.getElementById("refreshCurrentRacer");
+const refreshRacerSelection = document.getElementById("refreshRacerSelection");
+
+// Initialize Refresh Phase
+refreshPhaseButton.addEventListener("click", () => {
+  const confirmed = confirm(
+    "Start Refresh Phase? This allows you to retrieve discarded cards back to your draw pile (max 24 energy per racer, or 25 if they have the Refresh token)."
+  );
+
+  if (!confirmed) return;
+
+  // Reset refresh phase state
+  refreshPhaseState = {
+    currentRacer: null,
+    sprinterDone: false,
+    rollerDone: false,
+    sprinterMaxEnergy: 24,
+    rollerMaxEnergy: 24,
+    sprinterSelectedCards: [],
+    rollerSelectedCards: [],
+    sprinterCurrentEnergy: 0,
+    rollerCurrentEnergy: 0,
+  };
+
+  // Hide move racers phase and chosen cards, show refresh phase screen
+  moveRacersPhase.style.display = "none";
+  document.querySelector(".chosenCards").style.display = "none";
+  refreshPhaseScreen.style.display = "block";
+
+  // Show racer selection, hide other sections
+  refreshRacerSelection.style.display = "block";
+  refreshCardInterface.style.display = "none";
+  refreshCompleteSection.style.display = "none";
+
+  // Update button states
+  updateRefreshRacerButtons();
+});
+
+function updateRefreshRacerButtons() {
+  if (refreshPhaseState.sprinterDone) {
+    refreshSprinterButton.disabled = true;
+    refreshSprinterButton.textContent = "Sprinter ✓";
+  } else {
+    refreshSprinterButton.disabled = false;
+    refreshSprinterButton.textContent = "Refresh Sprinter";
+  }
+
+  if (refreshPhaseState.rollerDone) {
+    refreshRollerButton.disabled = true;
+    refreshRollerButton.textContent = "Rouleur ✓";
+  } else {
+    refreshRollerButton.disabled = false;
+    refreshRollerButton.textContent = "Refresh Rouleur";
+  }
+}
+
+// Start refreshing a specific racer
+refreshSprinterButton.addEventListener("click", () => {
+  startRefreshForRacer("sprinter");
+});
+
+refreshRollerButton.addEventListener("click", () => {
+  startRefreshForRacer("roller");
+});
+
+function startRefreshForRacer(racer) {
+  refreshPhaseState.currentRacer = racer;
+
+  // Hide racer selection, show card interface
+  refreshRacerSelection.style.display = "none";
+  refreshCardInterface.style.display = "block";
+
+  // Update header
+  refreshCurrentRacer.textContent =
+    racer === "sprinter" ? "Sprinter" : "Rouleur";
+
+  // Show token question, hide other sections
+  refreshTokenQuestion.style.display = "block";
+  refreshEnergyCounter.style.display = "none";
+  refreshDiscardedSection.style.display = "none";
+  refreshSelectedSection.style.display = "none";
+  refreshConfirmSection.style.display = "none";
+}
+
+// Handle token question
+hasTokenYes.addEventListener("click", () => {
+  setMaxEnergyAndShowCards(25);
+});
+
+hasTokenNo.addEventListener("click", () => {
+  setMaxEnergyAndShowCards(24);
+});
+
+function setMaxEnergyAndShowCards(maxEnergy) {
+  const racer = refreshPhaseState.currentRacer;
+
+  if (racer === "sprinter") {
+    refreshPhaseState.sprinterMaxEnergy = maxEnergy;
+  } else {
+    refreshPhaseState.rollerMaxEnergy = maxEnergy;
+  }
+
+  // Hide token question
+  refreshTokenQuestion.style.display = "none";
+
+  // Show energy counter and card sections
+  refreshEnergyCounter.style.display = "block";
+  refreshDiscardedSection.style.display = "block";
+  refreshSelectedSection.style.display = "block";
+  refreshConfirmSection.style.display = "block";
+
+  // Update energy display
+  refreshEnergyMax.textContent = maxEnergy;
+  updateRefreshEnergyDisplay();
+
+  // Display discarded cards
+  displayRefreshDiscardedCards();
+  displayRefreshSelectedCards();
+}
+
+function displayRefreshDiscardedCards() {
+  const racer = refreshPhaseState.currentRacer;
+  const deck = racer === "sprinter" ? sprinterDeck : rollerDeck;
+  const selectedCards =
+    racer === "sprinter"
+      ? refreshPhaseState.sprinterSelectedCards
+      : refreshPhaseState.rollerSelectedCards;
+
+  // Get discarded cards (not in draw or recycle pile, and not exhaustion)
+  const discardedCards = deck.discardPile.filter(
+    (card) => card.type !== "EXHAUSTION" && !selectedCards.includes(card)
+  );
+
+  // Sort by value (highest to lowest)
+  discardedCards.sort((a, b) => b.value - a.value);
+
+  // Clear and populate
+  refreshDiscardedCards.innerHTML = "";
+
+  if (discardedCards.length === 0) {
+    refreshDiscardedCards.innerHTML =
+      "<p style='text-align: center; color: gray;'>No cards available to refresh</p>";
+    return;
+  }
+
+  discardedCards.forEach((card) => {
+    const cardDiv = renderCardButton(card);
+    cardDiv.addEventListener("click", () => addCardToRefresh(card));
+    refreshDiscardedCards.appendChild(cardDiv);
+  });
+}
+
+function displayRefreshSelectedCards() {
+  const racer = refreshPhaseState.currentRacer;
+  const selectedCards =
+    racer === "sprinter"
+      ? refreshPhaseState.sprinterSelectedCards
+      : refreshPhaseState.rollerSelectedCards;
+
+  // Clear and populate
+  refreshSelectedCards.innerHTML = "";
+
+  if (selectedCards.length === 0) {
+    refreshSelectedCards.innerHTML =
+      "<p style='text-align: center; color: gray;'>No cards selected yet</p>";
+    return;
+  }
+
+  selectedCards.forEach((card) => {
+    const cardDiv = renderCardButton(card);
+    cardDiv.addEventListener("click", () => removeCardFromRefresh(card));
+    refreshSelectedCards.appendChild(cardDiv);
+  });
+}
+
+function addCardToRefresh(card) {
+  const racer = refreshPhaseState.currentRacer;
+  const maxEnergy =
+    racer === "sprinter"
+      ? refreshPhaseState.sprinterMaxEnergy
+      : refreshPhaseState.rollerMaxEnergy;
+  const currentEnergy =
+    racer === "sprinter"
+      ? refreshPhaseState.sprinterCurrentEnergy
+      : refreshPhaseState.rollerCurrentEnergy;
+
+  // Check if adding this card would exceed max energy
+  if (currentEnergy + card.value > maxEnergy) {
+    alert(
+      `Cannot add this card. It would exceed the maximum energy of ${maxEnergy}.`
+    );
+    return;
+  }
+
+  // Add card to selected
+  if (racer === "sprinter") {
+    refreshPhaseState.sprinterSelectedCards.push(card);
+    refreshPhaseState.sprinterCurrentEnergy += card.value;
+  } else {
+    refreshPhaseState.rollerSelectedCards.push(card);
+    refreshPhaseState.rollerCurrentEnergy += card.value;
+  }
+
+  // Update displays
+  updateRefreshEnergyDisplay();
+  displayRefreshDiscardedCards();
+  displayRefreshSelectedCards();
+}
+
+function removeCardFromRefresh(card) {
+  const racer = refreshPhaseState.currentRacer;
+
+  // Remove card from selected
+  if (racer === "sprinter") {
+    const index = refreshPhaseState.sprinterSelectedCards.indexOf(card);
+    if (index > -1) {
+      refreshPhaseState.sprinterSelectedCards.splice(index, 1);
+      refreshPhaseState.sprinterCurrentEnergy -= card.value;
+    }
+  } else {
+    const index = refreshPhaseState.rollerSelectedCards.indexOf(card);
+    if (index > -1) {
+      refreshPhaseState.rollerSelectedCards.splice(index, 1);
+      refreshPhaseState.rollerCurrentEnergy -= card.value;
+    }
+  }
+
+  // Update displays
+  updateRefreshEnergyDisplay();
+  displayRefreshDiscardedCards();
+  displayRefreshSelectedCards();
+}
+
+function updateRefreshEnergyDisplay() {
+  const racer = refreshPhaseState.currentRacer;
+  const currentEnergy =
+    racer === "sprinter"
+      ? refreshPhaseState.sprinterCurrentEnergy
+      : refreshPhaseState.rollerCurrentEnergy;
+  refreshEnergyValue.textContent = currentEnergy;
+}
+
+// Confirm cards for current racer
+confirmRefreshRacer.addEventListener("click", () => {
+  const racer = refreshPhaseState.currentRacer;
+
+  // Mark this racer as done
+  if (racer === "sprinter") {
+    refreshPhaseState.sprinterDone = true;
+  } else {
+    refreshPhaseState.rollerDone = true;
+  }
+
+  // Check if both racers are done
+  if (refreshPhaseState.sprinterDone && refreshPhaseState.rollerDone) {
+    // Show complete section
+    refreshCardInterface.style.display = "none";
+    refreshCompleteSection.style.display = "block";
+  } else {
+    // Go back to racer selection
+    refreshCardInterface.style.display = "none";
+    refreshRacerSelection.style.display = "block";
+    updateRefreshRacerButtons();
+  }
+});
+
+// Return to race - apply the refresh
+returnToRaceButton.addEventListener("click", () => {
+  // Move selected cards from discard pile to draw pile for sprinter
+  if (refreshPhaseState.sprinterSelectedCards.length > 0) {
+    refreshPhaseState.sprinterSelectedCards.forEach((card) => {
+      const index = sprinterDeck.discardPile.indexOf(card);
+      if (index > -1) {
+        sprinterDeck.discardPile.splice(index, 1);
+        sprinterDeck.drawPile.push(card);
+      }
+    });
+  }
+
+  // Move selected cards from discard pile to draw pile for roller
+  if (refreshPhaseState.rollerSelectedCards.length > 0) {
+    refreshPhaseState.rollerSelectedCards.forEach((card) => {
+      const index = rollerDeck.discardPile.indexOf(card);
+      if (index > -1) {
+        rollerDeck.discardPile.splice(index, 1);
+        rollerDeck.drawPile.push(card);
+      }
+    });
+  }
+
+  // Move all recycle pile cards to draw pile and shuffle for both decks
+  sprinterDeck.drawPile = sprinterDeck.drawPile.concat(
+    sprinterDeck.recyclePile
+  );
+  sprinterDeck.recyclePile = [];
+  sprinterDeck.shuffle(sprinterDeck.drawPile);
+
+  rollerDeck.drawPile = rollerDeck.drawPile.concat(rollerDeck.recyclePile);
+  rollerDeck.recyclePile = [];
+  rollerDeck.shuffle(rollerDeck.drawPile);
+
+  // Update deck info displays
+  sprinterDeck.setDeckInfo(sprinterDeckInfo, sprinterExhaustInfo);
+  rollerDeck.setDeckInfo(rollerDeckInfo, rollerExhaustInfo);
+
+  // Save game state
+  saveGameState();
+
+  // Return to card selection phase (start next turn)
+  refreshPhaseScreen.style.display = "none";
+  moveRacersPhase.style.display = "none";
+  drawCardPhase.style.display = "flex";
+  gameStatus.style.color = "orange";
+
+  // Clear any previous selections
+  sprinterSelection.innerHTML = "";
+  rollerSelection.innerHTML = "";
+  sprinterSelection.parentElement.style.display = "flex";
+  rollerSelection.parentElement.style.display = "flex";
+  document.querySelector(".chosenCards").style.display = "flex";
+
+  // Enable draw buttons
+  drawSprinterButton.disabled = false;
+  drawRollerButton.disabled = false;
+});

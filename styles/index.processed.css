@@ -392,3 +392,51 @@ h4 {
   color: #ffff22;
   background-color: #87c289;
 }
+
+/* Refresh Phase Styles */
+.refreshPhaseContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 15px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+#refreshDiscardedCards,
+#refreshSelectedCards {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  height: 120px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border: 2px solid #999;
+  width: 95%;
+  padding: 10px;
+  box-sizing: border-box;
+  max-width: 600px;
+}
+
+#refreshDiscardedCards::-webkit-scrollbar,
+#refreshSelectedCards::-webkit-scrollbar {
+  height: 8px;
+}
+
+#refreshDiscardedCards::-webkit-scrollbar-track,
+#refreshSelectedCards::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+#refreshDiscardedCards::-webkit-scrollbar-thumb,
+#refreshSelectedCards::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+#refreshDiscardedCards::-webkit-scrollbar-thumb:hover,
+#refreshSelectedCards::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
